@@ -177,4 +177,8 @@
     vc.view.backgroundColor = [UIColor yellowColor];
 }
 
+//- (BOOL)shouldAutorotate {
+//    return NO;
+//}
+
 @end

@@ -300,12 +300,13 @@
     if (self.avPlayer.rate != 0) {
         [self pause];
         [self.topVideoTitleView resume];
-        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_play"] forState:UIControlStateNormal];
+//        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_play"] forState:UIControlStateNormal];
     }else{
         [self play];
         [self.topVideoTitleView resumeAndStart];
-        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_pause"] forState:UIControlStateNormal];
+//        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_pause"] forState:UIControlStateNormal];
     }
+    self.progressView.playBtn.selected = !self.progressView.playBtn.selected;
 }
 
 
@@ -313,12 +314,13 @@
     if (self.avPlayer.rate != 0) {
         [self pause];
         [self.topVideoTitleView resume];
-        [self.progressView.playBtn setImage:[UIImage imageNamed:@"2xx"] forState:UIControlStateNormal];
+//        [self.progressView.playBtn setImage:[UIImage imageNamed:@"2xx"] forState:UIControlStateNormal];
     }else{
         [self play];
         [self.topVideoTitleView resumeAndStart];
-        [self.progressView.playBtn setImage:[UIImage imageNamed:@"2x"] forState:UIControlStateNormal];
+//        [self.progressView.playBtn setImage:[UIImage imageNamed:@"2x"] forState:UIControlStateNormal];
     }
+    self.progressView.playBtn.selected = !self.progressView.playBtn.selected;
 }
 
 //无法控制弹幕层
@@ -457,9 +459,11 @@
         self.currentPlayTime = 0.0;
     }
     if (self.avPlayer.rate != 0) {
-        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_play"] forState:UIControlStateNormal];
+//        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_play"] forState:UIControlStateNormal];
+        self.progressView.playBtn.selected = YES;
     }else{
-        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_pause"] forState:UIControlStateNormal];
+//        [self.progressView.playBtn setImage:[UIImage imageNamed:@"icon_pause"] forState:UIControlStateNormal];
+        self.progressView.playBtn.selected = NO;
     }
     if (!_isDragSlider) {
         self.progressView.progressSlider.currentProgress = self.currentPlayTime;
