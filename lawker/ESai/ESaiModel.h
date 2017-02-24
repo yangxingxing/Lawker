@@ -1,0 +1,118 @@
+//
+//  SXErtailModel.h
+//  lawker
+//
+//  Created by ASW on 2016-11-26.
+//  Copyright © 2016年 ShangxianDante. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface ESaiModel : NSObject
+
+/** 新闻标题 */
+@property (nonatomic, copy) NSString *title;
+/** 新闻发布时间 */
+@property (nonatomic, copy) NSString *ptime;
+/** 新闻内容 */
+@property (nonatomic, copy) NSString *body;
+
+@property (nonatomic, strong) NSArray *img;
+/** 新闻配图(希望这个数组中以后放HMNewsDetailImg模型) */
+@property (nonatomic, strong) NSArray *titlextra;
+/** 模块名*/
+@property(nonatomic,copy)NSString *replyBoard;
+/** 回复数*/
+@property(nonatomic,assign)NSInteger replyCount;
+
+@property (nonatomic,copy) NSString *tname;
+/**
+ *  新闻发布时间
+ */
+/**
+ *  多图数组
+ */
+@property (nonatomic,strong)NSArray *imgextra;
+@property (nonatomic,strong)NSArray *txtextra;
+@property (nonatomic,strong)NSArray *replyCountextra;
+@property (nonatomic,copy) NSString *photosetID;
+@property (nonatomic,strong)NSNumber *imgCount;
+@property (nonatomic,copy)NSNumber *hasHead;
+@property (nonatomic,copy) NSString *moreTitle;
+@property (nonatomic,copy) NSString *titleType;
+@property (nonatomic,copy) NSString *nexSian;
+@property (nonatomic,copy)NSNumber *hasImg;
+@property (nonatomic,strong)NSArray *docidextra;
+@property (nonatomic,copy) NSString *height;
+@property (nonatomic,copy) NSString *lmodify;
+@property (nonatomic,copy) NSString *template;
+@property (nonatomic,copy) NSString *skipType;
+/**
+ *  跟帖人数
+ */
+@property (nonatomic,copy)NSNumber *votecount;
+@property (nonatomic,copy)NSNumber *voteCount;
+
+@property (nonatomic,copy) NSString *alias;
+/**
+ *  新闻ID
+ */
+@property (nonatomic,copy) NSString *docid;
+@property (nonatomic,assign)BOOL hasCover;
+@property (nonatomic,copy)NSNumber *hasAD;
+@property (nonatomic,copy)NSNumber *priority;
+@property (nonatomic,copy) NSString *cid;
+@property (nonatomic,strong)NSArray *videoID;
+/**
+ *  图片连接
+ */
+@property (nonatomic,copy) NSString *imgsrc;
+@property (nonatomic,assign)BOOL hasIcon;
+@property (nonatomic,copy) NSString *ename;
+@property (nonatomic,copy) NSString *skipID;
+@property (nonatomic,copy)NSNumber *order;
+/**
+ *  描述
+ */
+@property (nonatomic,copy) NSString *digest;
+
+@property (nonatomic,strong)NSArray *editor;
+
+
+@property (nonatomic,copy) NSString *url_3w;
+@property (nonatomic,copy) NSString *specialID;
+@property (nonatomic,copy) NSString *timeConsuming;
+@property (nonatomic,copy) NSString *subtitle;
+@property (nonatomic,copy) NSString *adTitle;
+@property (nonatomic,copy) NSString *url;
+@property (nonatomic,copy) NSString *source;
+
+
+@property (nonatomic,copy) NSString *TAGS;
+@property (nonatomic,copy) NSString *TAG;
+/**
+ *  大图样式
+ */
+@property (nonatomic,copy)NSNumber *imgType;
+@property (nonatomic,strong)NSArray *specialextra;
+@property (nonatomic,strong)NSArray *orderextra;
+@property (nonatomic,strong)NSArray *listextra;
+
+
+@property (nonatomic,copy) NSString *boardid;
+@property (nonatomic,copy) NSString *nav;
+@property (nonatomic,copy) NSString *commentid;
+@property (nonatomic,copy)NSNumber *speciallogo;
+@property (nonatomic,copy) NSString *specialtip;
+@property (nonatomic,copy) NSString *specialadlogo;
+
+@property (nonatomic,copy) NSString *pixel;
+@property (nonatomic,strong)NSArray *applist;
+
+@property (nonatomic,copy) NSString *wap_portal;
+@property (nonatomic,copy) NSString *live_info;
+@property (nonatomic,copy) NSString *ads;
+@property (nonatomic,copy) NSString *videosource;
+
++ (instancetype)ESwsModelWithDict:(NSDictionary *)dict;
+@end
