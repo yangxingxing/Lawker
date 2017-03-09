@@ -7,7 +7,7 @@
 //
 
 #import "UIColor+Hex.h"
-#import "UIConsts.h"
+#import "wConsts.h"
 
 //登录接口返回支付密码状态,在有密码验证的情况下，要先判断密码启用状态
 typedef NS_ENUM(NSInteger, PayPwdEnableType) {

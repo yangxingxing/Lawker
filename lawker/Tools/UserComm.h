@@ -10,4 +10,6 @@
 
 @interface UserComm : NSObject
 
++ (BOOL)showReleaseFunction;
+
 @end

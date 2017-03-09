@@ -26,7 +26,7 @@
 @interface ZFDownloadManager()<NSCopying, NSURLSessionDelegate>
 
 /** 保存所有任务(注：用下载地址/后作为key) */
-@property (nonatomic, strong) NSMutableDictionary *tasks;
+//@property (nonatomic, strong) NSMutableDictionary *tasks;
 /** 保存所有下载相关信息字典 */
 @property (nonatomic, strong) NSMutableDictionary *sessionModels;
 /** 所有本地存储的所有下载信息数据数组 */
@@ -35,19 +35,21 @@
 @property (nonatomic, strong) NSMutableArray *downloadedArray;
 /** 下载中的模型数组*/
 @property (nonatomic, strong) NSMutableArray *downloadingArray;
+// 下载seesion会话
+@property (nonatomic, strong) NSURLSession *session;
 
 
 @end
 
 @implementation ZFDownloadManager
 
-- (NSMutableDictionary *)tasks
-{
-    if (!_tasks) {
-        _tasks = [NSMutableDictionary dictionary];
-    }
-    return _tasks;
-}
+//- (NSMutableDictionary *)tasks
+//{
+//    if (!_tasks) {
+//        _tasks = [NSMutableDictionary dictionary];
+//    }
+//    return _tasks;
+//}
 
 - (NSMutableDictionary *)sessionModels
 {
@@ -116,10 +118,36 @@ static ZFDownloadManager *_downloadManager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _downloadManager = [[self alloc] init];
+        _downloadManager.backgroundConfigure = @"DownloadSessionManager.backgroundConfigure";
     });
     
     return _downloadManager;
 }
+
+- (void)configureBackroundSession
+{
+    if (!_backgroundConfigure) {
+        return;
+    }
+    [self session];
+}
+
+- (NSURLSession *)session
+{
+    if (!_session) {
+        if (_backgroundConfigure) {
+            if (iOS8) {
+                _session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:_backgroundConfigure]delegate:self delegateQueue:[[NSOperationQueue alloc] init]];
+            }else{
+                _session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration backgroundSessionConfiguration:_backgroundConfigure]delegate:self delegateQueue:[[NSOperationQueue alloc] init]];
+            }
+        }else {
+            _session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[[NSOperationQueue alloc] init]];
+        }
+    }
+    return _session;
+}
+
 
 /**
  * 归档
@@ -154,7 +182,7 @@ static ZFDownloadManager *_downloadManager;
 /**
  *  开启任务下载资源
  */
-- (void)download:(NSString *)url progress:(ZFDownloadProgressBlock)progressBlock state:(ZFDownloadStateBlock)stateBlock
+- (void)download:(NSString *)url progress:(ZFDownloadProgressBlock)progressBlock state:(ZFDownloadStateBlock)stateBlock  newsModel:(SXHcModel *)newsModel isSuspend:(BOOL)Suspend
 {
     if (!url) return;
     if ([self isCompletion:url]) {
@@ -162,17 +190,15 @@ static ZFDownloadManager *_downloadManager;
         NSLog(@"----该资源已下载完成");
         return;
     }
-    
+    ZFSessionModel *model = [self getSessionModelUrl:url];
     // 暂停
-    if ([self.tasks valueForKey:ZFFileName(url)]) {
-        [self handle:url];
+    if (model.task) {
+        [self handle:url isSuspend:(BOOL)Suspend sessionModel:(ZFSessionModel *)model];
         return;
     }
-    
+
     // 创建缓存目录文件
     [self createCacheDirectory];
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[[NSOperationQueue alloc] init]];
     
     // 创建流
     NSOutputStream *stream = [NSOutputStream outputStreamToFileAtPath:ZFFileFullpath(url) append:YES];
@@ -185,89 +211,130 @@ static ZFDownloadManager *_downloadManager;
     [request setValue:range forHTTPHeaderField:@"Range"];
     
     // 创建一个Data任务
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request];
+    NSURLSessionTask *task = [self.session dataTaskWithRequest:request];
     NSUInteger taskIdentifier = arc4random() % ((arc4random() % 10000 + arc4random() % 10000));
     [task setValue:@(taskIdentifier) forKeyPath:@"taskIdentifier"];
     // 保存任务
-    [self.tasks setValue:task forKey:ZFFileName(url)];
+//    [self.tasks setValue:task forKey:ZFFileName(url)];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:ZFFileFullpath(url)]) {
         ZFSessionModel *sessionModel = [[ZFSessionModel alloc] init];
         sessionModel.url = url;
+        sessionModel.state = DownloadStateStart;
         sessionModel.progressBlock = progressBlock;
         sessionModel.stateBlock = stateBlock;
         sessionModel.stream = stream;
         sessionModel.startTime = [NSDate date];
         sessionModel.fileName = ZFFileName(url);
+        sessionModel.hcModel = newsModel;
+        sessionModel.task = task;
         [self.sessionModels setValue:sessionModel forKey:@(task.taskIdentifier).stringValue];
         [self.sessionModelsArray addObject:sessionModel];
         [self.downloadingArray addObject:sessionModel];
         // 保存
         [self save:self.sessionModelsArray];
+        [self startSessionModel:sessionModel];
     }else {
         for (ZFSessionModel *sessionModel in self.sessionModelsArray) {
             if ([sessionModel.url isEqualToString:url]) {
                 sessionModel.url = url;
+                sessionModel.state = DownloadStateStart;
                 sessionModel.progressBlock = progressBlock;
                 sessionModel.stateBlock = stateBlock;
                 sessionModel.stream = stream;
+                sessionModel.task = task;
                 sessionModel.startTime = [NSDate date];
                 sessionModel.fileName = ZFFileName(url);
+                sessionModel.hcModel = newsModel;
                 [self.sessionModels setValue:sessionModel forKey:@(task.taskIdentifier).stringValue];
+                [self startSessionModel:sessionModel];
+                break;
             }
         }
     }
-    [self start:url];
 }
 
 
-- (void)handle:(NSString *)url
+- (void)handle:(NSString *)url isSuspend:(BOOL)Suspend sessionModel:(ZFSessionModel *)sessionModel
 {
-    NSURLSessionDataTask *task = [self getTask:url];
-    if (task.state == NSURLSessionTaskStateRunning) {
-        [self pause:url];
-    } else {
-        [self start:url];
-    }
+//    NSURLSessionTask *task = [self getTask:url];
+//    if (Suspend) {
+//        if (sessionModel.state == DownloadStateSuspended) {
+//            [self startSessionModel:sessionModel];
+//        } else {
+//            [self pauseSessionModel:sessionModel];
+//        }
+//    } else {
+        if (sessionModel.state == DownloadStateStart) {
+            [self startSessionModel:sessionModel];
+        } else {
+            [self pauseSessionModel:sessionModel];
+        }
+//    }
+    
 }
 
 /**
  *  开始下载
  */
-- (void)start:(NSString *)url
+- (void)startSessionModel:(ZFSessionModel *)sessionModel
 {
-    NSURLSessionDataTask *task = [self getTask:url];
-    [task resume];
-    
-    [self getSessionModel:task.taskIdentifier].stateBlock(DownloadStateStart);
+    [sessionModel.task resume];
+    NSLog(@"---开始下载");
+    sessionModel.state = DownloadStateStart;
+    sessionModel.stateBlock(DownloadStateStart);
 }
 
 /**
  *  暂停下载
  */
-- (void)pause:(NSString *)url
+- (void)pauseSessionModel:(ZFSessionModel *)sessionModel
 {
-    NSURLSessionDataTask *task = [self getTask:url];
-    [task suspend];
-    
-    [self getSessionModel:task.taskIdentifier].stateBlock(DownloadStateSuspended);
+    [sessionModel.task suspend];
+    NSLog(@"---暂停下载");
+    sessionModel.state = DownloadStateSuspended;
+    sessionModel.stateBlock(DownloadStateSuspended);
 }
 
 /**
  *  根据url获得对应的下载任务
  */
-- (NSURLSessionDataTask *)getTask:(NSString *)url
+- (NSURLSessionTask *)getTask:(NSString *)url
 {
-    return (NSURLSessionDataTask *)[self.tasks valueForKey:ZFFileName(url)];
+    for (ZFSessionModel *sessionModel in self.sessionModelsArray) {
+        // 暂停
+        if ([sessionModel.url isEqualToString:url]) {
+            return sessionModel.task;
+        }
+    }
+    return nil;
 }
 
 /**
  *  根据url获取对应的下载信息模型
  */
+- (ZFSessionModel *)getSessionModelUrl:(NSString *)url
+{
+    for (ZFSessionModel *sessionModel in self.sessionModelsArray) {
+        if ([sessionModel.url isEqualToString:url]) {
+            return sessionModel;
+        }
+    }
+    return nil;
+}
+
+/**
+ *  根据taskIdentifier获取对应的下载信息模型
+ */
 - (ZFSessionModel *)getSessionModel:(NSUInteger)taskIdentifier
 {
-    return (ZFSessionModel *)[self.sessionModels valueForKey:@(taskIdentifier).stringValue];
+    for (ZFSessionModel *sessionModel in self.sessionModelsArray) {
+        if (sessionModel.task.taskIdentifier == taskIdentifier) {
+            return sessionModel;
+        }
+    }
+    return nil;
 }
 
 /**
@@ -308,32 +375,39 @@ static ZFDownloadManager *_downloadManager;
  */
 - (void)deleteFile:(NSString *)url
 {
-    NSURLSessionDataTask *task = [self getTask:url];
-    if (task) {
-        // 取消下载
-        [task cancel];
-    }
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:ZFFileFullpath(url)]) {
         // 删除沙盒中的资源
         [fileManager removeItemAtPath:ZFFileFullpath(url) error:nil];
         // 删除资源总长度
-        if ([fileManager fileExistsAtPath:ZFDownloadDetailPath]) {
-            // 从沙盒中移除该条模型的信息
-            for (ZFSessionModel *model in self.sessionModelsArray.mutableCopy) {
-                if ([model.url isEqualToString:url]) {
-                    // 关闭流
-                    [model.stream close];
-                    [self.sessionModelsArray removeObject:model];
+    }
+    ZFSessionModel *sessionModel;
+    if ([fileManager fileExistsAtPath:ZFDownloadDetailPath]) {
+        // 从沙盒中移除该条模型的信息
+        for (ZFSessionModel *model in self.sessionModelsArray) {
+            if ([model.url isEqualToString:url]) {
+                //                    NSURLSessionTask *task = [self getTask:url];
+                if (model.task) {
+                    // 取消下载
+                    [model.task cancel];
                 }
+                // 关闭流
+                model.isDelete = YES;
+                [model.stream close];
+                sessionModel = model;
+                break;
             }
         }
-        // 删除任务
-        [self.tasks removeObjectForKey:ZFFileName(url)];
-        [self.sessionModels removeObjectForKey:@([self getTask:url].taskIdentifier).stringValue];
-        // 保存归档信息
-        [self save:self.sessionModelsArray];
     }
+    if (sessionModel) {
+        [self.sessionModelsArray removeObject:sessionModel];
+    }
+    // 删除任务
+    //        [self.tasks removeObjectForKey:ZFFileName(url)];
+    [self.sessionModels removeObjectForKey:@([self getTask:url].taskIdentifier).stringValue];
+    // 保存归档信息
+    [self save:self.sessionModelsArray];
+
 }
 
 /**
@@ -347,8 +421,11 @@ static ZFDownloadManager *_downloadManager;
         // 删除沙盒中所有资源
         [fileManager removeItemAtPath:ZFCachesDirectory error:nil];
         // 删除任务
-        [[self.tasks allValues] makeObjectsPerformSelector:@selector(cancel)];
-        [self.tasks removeAllObjects];
+        for (ZFSessionModel *sessionModel in self.sessionModelsArray) {
+            [sessionModel.task cancel];
+        }
+//        [[self.tasks allValues] makeObjectsPerformSelector:@selector(cancel)];
+//        [self.tasks removeAllObjects];
         
         for (ZFSessionModel *sessionModel in [self.sessionModels allValues]) {
             [sessionModel.stream close];
@@ -369,8 +446,8 @@ static ZFDownloadManager *_downloadManager;
 - (BOOL)isFileDownloadingForUrl:(NSString *)url withProgressBlock:(ZFDownloadProgressBlock)progressBlock
 {
     BOOL retValue = NO;
-    NSURLSessionDataTask *task = [self getTask:url];
-    ZFSessionModel *session = [self getSessionModel:task.taskIdentifier];
+//    NSURLSessionTask *task = [self getTask:url];
+    ZFSessionModel *session = [self getSessionModelUrl:url];
     if (session) {
         if (progressBlock) {
             session.progressBlock = progressBlock;
@@ -388,12 +465,20 @@ static ZFDownloadManager *_downloadManager;
     return currentDownloads;
 }
 
+- (NSArray *)currentDownloadsModel {
+    NSMutableArray *currentDownloads = [NSMutableArray new];
+    [self.sessionModels enumerateKeysAndObjectsUsingBlock:^(id key, ZFSessionModel *download, BOOL *stop) {
+        [currentDownloads addObject:download];
+    }];
+    return currentDownloads;
+}
+
 #pragma mark NSURLSessionDataDelegate
 
 /**
  * 接收到响应
  */
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionTask *)dataTask didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
     
     ZFSessionModel *sessionModel = [self getSessionModel:dataTask.taskIdentifier];
@@ -422,10 +507,63 @@ static ZFDownloadManager *_downloadManager;
     completionHandler(NSURLSessionResponseAllow);
 }
 
+// 监听文件下载进度
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+      didWriteData:(int64_t)bytesWritten
+ totalBytesWritten:(int64_t)totalBytesWritten
+totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
+    ZFSessionModel *sessionModel = [self getSessionModel:downloadTask.taskIdentifier];
+    
+    // 写入数据
+//    [sessionModel.stream write:data.bytes maxLength:data.length];
+    
+    // 下载进度
+//    NSUInteger totalBytesWritten = ZFDownloadLength(sessionModel.url);
+//    NSUInteger expectedSize = sessionModel.totalLength;
+    CGFloat progress = 1.0 * totalBytesWritten / totalBytesExpectedToWrite;
+    
+    // 每秒下载速度
+    NSTimeInterval downloadTime = -1 * [sessionModel.startTime timeIntervalSinceNow];
+    NSUInteger speed = totalBytesWritten / downloadTime;
+    if (speed == 0) { return; }
+    float speedSec = [sessionModel calculateFileSizeInUnit:(unsigned long long) speed];
+    NSString *unit = [sessionModel calculateUnit:(unsigned long long) speed];
+    NSString *speedStr = [NSString stringWithFormat:@"%.2f%@/s",speedSec,unit];
+    
+    // 剩余下载时间
+    NSMutableString *remainingTimeStr = [[NSMutableString alloc] init];
+    unsigned long long remainingContentLength = totalBytesExpectedToWrite - totalBytesWritten;
+    int remainingTime = (int)(remainingContentLength / speed);
+    int hours = remainingTime / 3600;
+    int minutes = (remainingTime - hours * 3600) / 60;
+    int seconds = remainingTime - hours * 3600 - minutes * 60;
+    
+    if(hours>0) {[remainingTimeStr appendFormat:@"%d 小时 ",hours];}
+    if(minutes>0) {[remainingTimeStr appendFormat:@"%d 分 ",minutes];}
+    if(seconds>0) {[remainingTimeStr appendFormat:@"%d 秒",seconds];}
+    
+    NSString *writtenSize = [NSString stringWithFormat:@"%.1f%@",
+                             [sessionModel calculateFileSizeInUnit:(unsigned long long)totalBytesWritten],
+                             [sessionModel calculateUnit:(unsigned long long)totalBytesWritten]];
+    
+    if (sessionModel.stateBlock) {
+        sessionModel.state = DownloadStateStart;
+        sessionModel.stateBlock(DownloadStateStart);
+    }
+    if (sessionModel.progressBlock) {
+        sessionModel.progressBlock(progress, speedStr, remainingTimeStr,writtenSize, sessionModel.totalSize);
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(downloadResponse:)]) {
+            [self.delegate downloadResponse:sessionModel];
+        }
+    });
+}
 /**
  * 接收到服务器返回的数据
  */
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionTask *)dataTask didReceiveData:(NSData *)data
 {
     ZFSessionModel *sessionModel = [self getSessionModel:dataTask.taskIdentifier];
     
@@ -457,11 +595,12 @@ static ZFDownloadManager *_downloadManager;
     if(minutes>0) {[remainingTimeStr appendFormat:@"%d 分 ",minutes];}
     if(seconds>0) {[remainingTimeStr appendFormat:@"%d 秒",seconds];}
     
-    NSString *writtenSize = [NSString stringWithFormat:@"%.2f %@",
+    NSString *writtenSize = [NSString stringWithFormat:@"%.1f%@",
                              [sessionModel calculateFileSizeInUnit:(unsigned long long)receivedSize],
                              [sessionModel calculateUnit:(unsigned long long)receivedSize]];
     
     if (sessionModel.stateBlock) {
+        sessionModel.state = DownloadStateStart;
         sessionModel.stateBlock(DownloadStateStart);
     }
     if (sessionModel.progressBlock) {
@@ -482,26 +621,36 @@ static ZFDownloadManager *_downloadManager;
     ZFSessionModel *sessionModel = [self getSessionModel:task.taskIdentifier];
     if (!sessionModel) return;
     
-    // 关闭流
-    [sessionModel.stream close];
-    sessionModel.stream = nil;
-    
     if ([self isCompletion:sessionModel.url]) {
         // 下载完成
+        sessionModel.state = DownloadStateCompleted;
         sessionModel.stateBlock(DownloadStateCompleted);
     } else if (error){
-        // 下载失败
-        sessionModel.stateBlock(DownloadStateFailed);
+        // 下载失败，删除也时关闭stream也会走这边
+        if (sessionModel.downLoadCount < 10 && !sessionModel.isDelete) {  // 可以分用户退到后台前是暂停还是下载中
+            sessionModel.downLoadCount++;
+            sessionModel.task = nil;
+           [self download:sessionModel.url progress:^(CGFloat progress, NSString *speed, NSString *remainingTime, NSString *writtenSize, NSString *totalSize) {} state:^(DownloadState state) {} newsModel:sessionModel.hcModel isSuspend:NO];
+            return;
+        } else {
+            sessionModel.state = DownloadStateFailed;
+            sessionModel.stateBlock(DownloadStateFailed);
+        }
     }
+    // 关闭流
+    sessionModel.stream = nil;
+    [sessionModel.stream close];
+    
+    [self save:self.sessionModelsArray];
     // 清除任务
-    [self.tasks removeObjectForKey:ZFFileName(sessionModel.url)];
-    [self.sessionModels removeObjectForKey:@(task.taskIdentifier).stringValue];
+    sessionModel.task = nil;
+    [self.sessionModels setValue:sessionModel forKey:@(task.taskIdentifier).stringValue];
     
     [self.downloadingArray removeObject:sessionModel];
     
     // 清除任务
-    [self.tasks removeObjectForKey:ZFFileName(sessionModel.url)];
-    [self.sessionModels removeObjectForKey:@(task.taskIdentifier).stringValue];
+//    [self.tasks removeObjectForKey:ZFFileName(sessionModel.url)];
+//    [self.sessionModels removeObjectForKey:@(task.taskIdentifier).stringValue];
     
     [self.downloadingArray removeObject:sessionModel];
     
@@ -510,6 +659,19 @@ static ZFDownloadManager *_downloadManager;
     if (![self.downloadedArray containsObject:sessionModel]) {
         [self.downloadedArray addObject:sessionModel];
     }
+}
+
+// 获取所以的后台下载session
+- (NSArray *)sessionDownloadTasks
+{
+    __block NSArray *tasks = nil;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        tasks = downloadTasks;
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    return tasks;
 }
 
 @end

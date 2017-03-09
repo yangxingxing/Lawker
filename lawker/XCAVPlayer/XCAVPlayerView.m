@@ -247,7 +247,7 @@
         if([_retas isEqualToString:@"1"]){
             [_avPlayer play];}
         else{
-            _avPlayer.rate = 2.0;
+            _avPlayer.rate = [_retas floatValue];
         }
         self.resumeBtn.hidden = YES;
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(currentXCPlayerTime) object:nil];
@@ -674,7 +674,9 @@
             [self.xzSuperView addSubview:self];
         }
         [self mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self.xzSuperView).with.insets(UIEdgeInsetsZero);
+            if (self.xzSuperView) {
+                make.edges.equalTo(self.xzSuperView).with.insets(UIEdgeInsetsZero);
+            }
         }];
     }
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hiddenProgressView:) object:self];

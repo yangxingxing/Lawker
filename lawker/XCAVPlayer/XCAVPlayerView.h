@@ -55,6 +55,8 @@ typedef NS_ENUM(NSInteger,TouchesState){
 
 @property (nonatomic, assign, readonly) TouchesState touchesState;/**< 手势状态 */
 
+@property (nonatomic,strong) UIViewController *owner;
+
 
 + (instancetype)shareManager;
 

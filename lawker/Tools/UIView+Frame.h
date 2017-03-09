@@ -16,5 +16,7 @@
 @property (nonatomic, assign) CGFloat  width;
 @property (nonatomic, assign) CGFloat  height;
 
+//细字体
++ (UIFont*)lightFontWithSize:(CGFloat)size;
 
 @end

@@ -17,7 +17,7 @@
     }else if (value && [value isKindOfClass:[NSNumber class]]){
         return value.description;
     }else{
-        return SStringEmpty;
+        return @"";
     }
 }
 

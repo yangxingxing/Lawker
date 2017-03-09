@@ -36,23 +36,23 @@
 /**
  *  下载进度
  */
-@interface TYDownloadProgress ()
-// 续传大小
-@property (nonatomic, assign) int64_t resumeBytesWritten;
-// 这次写入的数量
-@property (nonatomic, assign) int64_t bytesWritten;
-// 已下载的数量
-@property (nonatomic, assign) int64_t totalBytesWritten;
-// 文件的总大小
-@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
-// 下载进度
-@property (nonatomic, assign) float progress;
-// 下载速度
-@property (nonatomic, assign) float speed;
-// 下载剩余时间
-@property (nonatomic, assign) int remainingTime;
-
-@end
+//@interface TYDownloadProgress ()
+//// 续传大小
+//@property (nonatomic, assign) int64_t resumeBytesWritten;
+//// 这次写入的数量
+//@property (nonatomic, assign) int64_t bytesWritten;
+//// 已下载的数量
+//@property (nonatomic, assign) int64_t totalBytesWritten;
+//// 文件的总大小
+//@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
+//// 下载进度
+//@property (nonatomic, assign) float progress;
+//// 下载速度
+//@property (nonatomic, assign) float speed;
+//// 下载剩余时间
+//@property (nonatomic, assign) int remainingTime;
+//
+//@end
 
 @interface TYDownloadSessionManager ()
 
@@ -65,8 +65,6 @@
 // >>>>>>>>>>>>>>>>>>>>>>>>>>  session info
 // 下载seesion会话
 @property (nonatomic, strong) NSURLSession *session;
-// 下载模型字典 key = url, value = model
-@property (nonatomic, strong) NSMutableDictionary *downloadingModelDic;
 // 下载中的模型
 @property (nonatomic, strong) NSMutableArray *waitingDownloadModels;
 // 等待中的模型
@@ -76,7 +74,7 @@
 
 @end
 
-#define IS_IOS8ORLATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8)
+#define IS_IOS8ORLATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 
 @implementation TYDownloadSessionManager
 
@@ -97,6 +95,7 @@
         _maxDownloadCount = 1;
         _resumeDownloadFIFO = YES;
         _isBatchDownload = NO;
+        self.downloadingModelDic = [[self getSessionModels] mutableCopy];
     }
     return self;
 }
@@ -107,6 +106,24 @@
         return;
     }
     [self session];
+}
+
+/**
+ * 归档
+ */
+- (void)save:(NSDictionary *)sessionModels
+{
+    [NSKeyedArchiver archiveRootObject:sessionModels toFile:TYDownloadDetailPath];
+}
+
+/**
+ * 读取model
+ */
+- (NSDictionary *)getSessionModels
+{
+    // 文件信息
+    NSDictionary *sessionModels = [NSKeyedUnarchiver unarchiveObjectWithFile:TYDownloadDetailPath];
+    return sessionModels;
 }
 
 #pragma mark - getter
@@ -147,7 +164,7 @@
 - (NSString *)downloadDirectory
 {
     if (!_downloadDirectory) {
-        _downloadDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"TYDownloadCache"];
+        _downloadDirectory = TYCachesDirectory;
         [self createDirectory:_downloadDirectory];
     }
     return _downloadDirectory;
@@ -265,6 +282,7 @@
     if (![self.downloadingModelDic objectForKey:downloadModel.downloadURL]) {
         self.downloadingModelDic[downloadModel.downloadURL] = downloadModel;
     }
+    [self save:self.downloadingModelDic];
     
     [downloadModel.task resume];
     
@@ -327,7 +345,7 @@
 - (void)cancleWithDownloadModel:(TYDownloadModel *)downloadModel clearResumeData:(BOOL)clearResumeData
 {
     if (!downloadModel.task && downloadModel.state == TYDownloadStateReadying) {
-        [self removeDownLoadingModelForURLString:downloadModel.downloadURL];
+        [self removeDownLoadingModelForURLString:downloadModel.downloadURL complete:NO];
         @synchronized (self) {
             [self.waitingDownloadModels removeObject:downloadModel];
         }
@@ -370,6 +388,7 @@
             if ([self.waitingDownloadModels indexOfObject:downloadModel] == NSNotFound) {
                 [self.waitingDownloadModels addObject:downloadModel];
                 self.downloadingModelDic[downloadModel.downloadURL] = downloadModel;
+                [self save:self.downloadingModelDic];
             }
             downloadModel.state = TYDownloadStateReadying;
             [self downloadModel:downloadModel didChangeState:TYDownloadStateReadying filePath:nil error:nil];
@@ -484,9 +503,16 @@
     }
 }
 
-- (void)removeDownLoadingModelForURLString:(NSString *)URLString
+- (void)removeDownLoadingModelForURLString:(NSString *)URLString complete:(BOOL)complete
 {
-    [self.downloadingModelDic removeObjectForKey:URLString];
+    TYDownloadModel *model = [self.downloadingModelDic objectForKey:URLString];
+    if (complete) {
+        model.state = TYDownloadStateCompleted;
+    } else {
+        [self.downloadingModelDic removeObjectForKey:URLString];
+    }
+    
+    [self save:self.downloadingModelDic];
 }
 
 // 获取resumeData
@@ -536,6 +562,18 @@
     }
 }
 
+/**
+ *  创建缓存目录文件
+ */
+- (void)createCacheDirectory
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:TYCachesDirectory]) {
+        [fileManager createDirectoryAtPath:TYCachesDirectory withIntermediateDirectories:YES attributes:nil error:NULL];
+    }
+}
+
+
 - (void)moveFileAtURL:(NSURL *)srcURL toPath:(NSString *)dstPath
 {
     NSError *error = nil;
@@ -579,6 +617,18 @@
     downloadModel.progress.resumeBytesWritten = fileOffset;
 }
 
+//- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
+//{
+//    
+//}
+/**
+ * 接收到服务器返回的数据
+ */
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+{
+    NSLog(@"接收到数据");
+}
+
 // 监听文件下载进度
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
       didWriteData:(int64_t)bytesWritten
@@ -590,7 +640,9 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
     if (!downloadModel || downloadModel.state == TYDownloadStateSuspended) {
         return;
     }
-    
+    Byte  b=( Byte) 0xff&totalBytesWritten >> 8;
+    // 写入数据
+    [downloadModel.stream write:&b maxLength:totalBytesWritten];
     float progress = (double)totalBytesWritten/totalBytesExpectedToWrite;
     
     int64_t resumeBytesWritten = downloadModel.progress.resumeBytesWritten;
@@ -619,6 +671,8 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 didFinishDownloadingToURL:(NSURL *)location
 {
     TYDownloadModel *downloadModel = [self downLoadingModelForURLString:downloadTask.taskDescription];
+    downloadModel.progress.totalBytesWritten = downloadModel.progress.totalBytesExpectedToWrite;
+    [downloadModel.stream close];
     if (!downloadModel && _backgroundSessionDownloadCompleteBlock) {
         NSString *filePath = _backgroundSessionDownloadCompleteBlock(downloadTask.taskDescription);
         // 移动文件到下载目录
@@ -630,7 +684,7 @@ didFinishDownloadingToURL:(NSURL *)location
     if (location) {
         // 移动文件到下载目录
         [self createDirectory:downloadModel.downloadDirectory];
-        [self moveFileAtURL:location toPath:downloadModel.filePath];
+        [self moveFileAtURL:location toPath:downloadModel.downloadDirectory];
     }
 }
 
@@ -666,7 +720,7 @@ didFinishDownloadingToURL:(NSURL *)location
     
     downloadModel.progress.resumeBytesWritten = 0;
     downloadModel.task = nil;
-    [self removeDownLoadingModelForURLString:downloadModel.downloadURL];
+    [self removeDownLoadingModelForURLString:downloadModel.downloadURL complete:YES];
     
     if (downloadModel.manualCancle) {
         // 手动取消，当做暂停

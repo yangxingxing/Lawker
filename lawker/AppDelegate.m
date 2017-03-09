@@ -5,11 +5,15 @@
 //  Created by 董 尚先 on 15-1-22.
 //  Copyright (c) 2015年 ShangxianDante. All rights reserved.
 //
-#import <Bugly/Bugly.h>
+//#import <Bugly/Bugly.h>
 #import <AlipaySDK/AlipaySDK.h>
 #import "AppDelegate.h"
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKConnector/ShareSDKConnector.h>
+#import "ZFDownloadManager.h"
+#import "TYDownloadSessionManager.h"
+#import "SXNetworkTools.h"
+#import "WTPayManager.h"
 
 //腾讯开放平台（对应QQ和QQ空间）SDK头文件
 #import <TencentOpenAPI/TencentOAuth.h>
@@ -35,7 +39,9 @@
 @end
 #endif
 
-@interface AppDelegate ()
+@interface AppDelegate () {
+    __weak ZFDownloadManager *_downLoadManager;
+}
 
 @end
 
@@ -91,13 +97,24 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    if (DEVELOPER_MODE)
-    {
+//    if (DEVELOPER_MODE)
+//    {
         // Init the Bugly sdk
 //        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [Bugly startWithAppId:BUGLY_APP_ID];
+//            [Bugly startWithAppId:BUGLY_APP_ID];
 //        });
-    }
+//    }
+    
+    [self checkAppStoreVer];
+    
+    //session后台下载
+//    [[TYDownloadSessionManager manager] setBackgroundSessionDownloadCompleteBlock:^NSString *(NSString *downloadUrl) {
+//        TYDownloadModel *model = [[TYDownloadModel alloc]initWithURLString:downloadUrl];
+//        return model.filePath;
+//    }];
+//    [[TYDownloadSessionManager manager] configureBackroundSession];
+//    [[ZFDownloadManager sharedInstance] configureBackroundSession];
+    _downLoadManager = [ZFDownloadManager sharedInstance];
     
     [[XGSetting getInstance] enableDebug:YES];
     [XGPush startApp:2200249774 appKey:@"I1N7PM918ZZZ"];
@@ -199,6 +216,10 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    NSMutableArray *downladModel = _downLoadManager.sessionModelsArray;
+    for (ZFSessionModel *downloadObject in downladModel) {
+        [_downLoadManager download:downloadObject.url progress:^(CGFloat progress, NSString *speed, NSString *remainingTime, NSString *writtenSize, NSString *totalSize) {} state:^(DownloadState state) {} newsModel:downloadObject.hcModel isSuspend:NO];
+    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -263,6 +284,16 @@
             }
             NSLog(@"授权结果 authCode = %@", authCode?:@"");
         }];
+    } else if ([url.host isEqualToString:@"pay"])  {
+        return  [WXApi handleOpenURL:url delegate:[WTPayManager shareWTPayManager]];
+    }
+    return YES;
+}
+
+// iOS7.0
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    if ([url.host isEqualToString:@"pay"])  {
+        return  [WXApi handleOpenURL:url delegate:[WTPayManager shareWTPayManager]];
     }
     return YES;
 }
@@ -340,5 +371,36 @@
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
 }
 
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier
+  completionHandler:(void (^)())completionHandler
+{
+//    [[TYDownloadSessionManager manager] configureBackroundSession];
+//    [TYDownloadSessionManager manager].backgroundSessionCompletionHandler = completionHandler;
+    [[ZFDownloadManager sharedInstance] configureBackroundSession];
+}
+
+- (void)checkAppStoreVer {
+    [[SXNetworkTools sharedNetworkTools] GET:@"https://itunes.apple.com/lookup?id=1190041374" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        if (![responseObject isKindOfClass:[NSDictionary class]])
+            return;
+        
+        NSArray *infoArray = [responseObject objectForKey:@"results"];
+        NSInteger resultCount = [responseObject[@"resultCount"] integerValue];
+        
+        if (resultCount >= 1 && infoArray.count >= 1) { //仅供上线判断
+            NSDictionary *results = [infoArray firstObject];
+            if (infoArray && [infoArray isKindOfClass:[NSArray class]] && [infoArray count]) {
+                NSString *lastVersion = [results objectForKey:@"version"];
+                
+                NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+                [userDefault setObject:lastVersion forKey:AppStoreVerKey];
+                [userDefault synchronize];
+            }
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
+}
 
 @end

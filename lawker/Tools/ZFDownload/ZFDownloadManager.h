@@ -23,6 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ZFSessionModel.h"
+#import "SXHcModel.h"
 
 // 缓存主目录
 #define ZFCachesDirectory [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]stringByAppendingPathComponent:@"ZFCache"]
@@ -38,6 +39,8 @@
 
 // 存储文件信息的路径（caches）
 #define ZFDownloadDetailPath [ZFCachesDirectory stringByAppendingPathComponent:@"downloadDetail.data"]
+// 存储文件信息的路径（caches）
+#define ZFDownloadTaskDetailPath [ZFCachesDirectory stringByAppendingPathComponent:@"downloadTaskDetail.data"]
 
 @protocol ZFDownloadDelegate <NSObject>
 /** 下载中的回调 */
@@ -57,6 +60,8 @@
 @property (nonatomic, strong, readonly) NSMutableArray *downloadingArray;
 /** ZFDownloadDelegate */
 @property (nonatomic, weak) id<ZFDownloadDelegate> delegate;
+// 后台session configure
+@property (nonatomic, strong) NSString *backgroundConfigure;
 
 /**
  *  单例
@@ -75,6 +80,9 @@
  */
 - (NSArray *)getSessionModels;
 
+// 配置后台session
+- (void)configureBackroundSession;
+
 /**
  *  开启任务下载资源
  *
@@ -82,7 +90,7 @@
  *  @param progressBlock 回调下载进度
  *  @param stateBlock    下载状态
  */
-- (void)download:(NSString *)url progress:(ZFDownloadProgressBlock)progressBlock state:(ZFDownloadStateBlock)stateBlock;
+- (void)download:(NSString *)url progress:(ZFDownloadProgressBlock)progressBlock state:(ZFDownloadStateBlock)stateBlock newsModel:(SXHcModel *)newsModel isSuspend:(BOOL)Suspend;
 
 /**
  *  查询该资源的下载进度值
@@ -126,12 +134,12 @@
 /**
  *  开始下载
  */
-- (void)start:(NSString *)url;
+- (void)startSessionModel:sessionModel;
 
 /**
  *  暂停下载
  */
-- (void)pause:(NSString *)url;
+- (void)pauseSessionModel:sessionModel;
 
 /**
  *  判断当前url是否正在下载
@@ -144,10 +152,15 @@
 - (BOOL)isFileDownloadingForUrl:(NSString *)url withProgressBlock:(ZFDownloadProgressBlock)block;
 
 /**
- *  正在下载的视频URL的数组
+ *  获得所有的视频URL的数组
  *
  *  @return 视频URL的数组
  */
 - (NSArray *)currentDownloads;
+
+// 获取所以的后台下载session
+- (NSArray *)sessionDownloadTasks;
+
+- (void)configureBackroundSession;
 
 @end

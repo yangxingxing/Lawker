@@ -274,8 +274,6 @@
         //返回参数列表
         return signParams;
         
-    }else{
-        
     }
     return nil;
 

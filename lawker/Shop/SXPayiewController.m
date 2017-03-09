@@ -135,7 +135,8 @@
         NSString *key = [responseObject.keyEnumerator nextObject];
         
         NSArray *temArray = responseObject[key];
-        if([temArray[1][@"null"] isEqualToString:@"ok"]){
+        NSDictionary *codeDic = temArray.count > 1 ? temArray[1] : temArray[0];
+        if([codeDic[@"null"] isEqualToString:@"ok"]){
             _label_jf.text = [NSString stringWithFormat:@"%.2f",[temArray[0][@"jf"] floatValue] + [temArray[1][@"yf"] floatValue] ];
             _label_jg.text = [NSString stringWithFormat:@"%.2f",[temArray[0][@"jg"] floatValue] + [temArray[1][@"yf"] floatValue] ];
             _label_yf.text = temArray[1][@"yf"];
@@ -273,7 +274,12 @@
         allUrlstring = [NSString stringWithFormat:@"/payo/%ld/%@/%ld/%.2f/%.2f/%d/%@",(long)app.uid,app.pass,(long)app.buv,payjg,payjf,payint,app.but];
     }
     NSLog(@"%@",allUrlstring);
-    
+//    [[[SXNetworkTools sharedNetworkTools]POST:@"http://lawker.cn/WxpayAPI_php_v3/example/notify.php" parameters:@"" progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
+//        NSLog(@"%@", responseObject);
+//    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+//        NSLog(@"%@",error);
+//    }] resume];
+
     [[[SXNetworkTools sharedNetworkTools]GET:allUrlstring parameters:nil progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
         if([responseObject[@"null"] isEqualToString:@"ok"]){
             if(payint==1){
@@ -282,8 +288,14 @@
                 item.orderPrice = [NSString stringWithFormat:@"%f",payjg*100];//一分钱
                 item.orderOutTradeNO = responseObject[@"onum"];
                 item.orderBody = responseObject[@"onum"];
+                __weak typeof(item) wItem = item;
                 [WTPayManager wtPayOrderItem:item payType:WTPayTypeWeixin result:^(NSDictionary *payResult, NSString *error) {
                     
+                    [[[SXNetworkTools sharedNetworkTools]POST:@"http://lawker.cn/WxpayAPI_php_v3/example/notify.php" parameters:[NSString stringWithFormat:@"o=%@",wItem.orderOutTradeNO] progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
+                        NSLog(@"%@", responseObject);
+                    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                        NSLog(@"%@",error);
+                    }] resume];
                     if (payResult) {
                         NSLog(@"%@", payResult[@"result"]);
                     }else{
@@ -456,7 +468,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self pays];
+//    [self pays];
     if (![[NSUserDefaults standardUserDefaults]boolForKey:@"update"]) {
         return;
     }

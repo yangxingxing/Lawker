@@ -11,7 +11,7 @@
 #import "Order.h"
 #import "DataSigner.h"
 
-@interface WTPayManager ()<NSCopying>
+@interface WTPayManager ()<NSCopying,WXApiDelegate>
 @property (nonatomic, copy)WTPayResultBlock result;
 @end
 

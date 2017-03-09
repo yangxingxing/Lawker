@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "SXNewsModel.h"
 
+typedef NS_ENUM(NSUInteger, FromType) {
+    FromOther,
+    FromCash
+};
+
+
 @interface AdvancedBarrageController : UIViewController
 
 @property(nonatomic,strong) SXNewsModel *newsModel;
@@ -18,4 +24,8 @@
 @property(nonatomic,weak)NSString *skip;
 
 @property (nonatomic,assign) NSInteger index;
+
+@property (nonatomic,assign) FromType from;
+@property (nonatomic,copy) NSString *video;
+
 @end

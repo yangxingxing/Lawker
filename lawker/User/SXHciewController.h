@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SXHcModel.h"
 
-@interface SXHciewController : UITableViewController
+@interface SXHciewController : UIViewController
 
 @property(nonatomic,strong) SXHcModel *newsModel;
 

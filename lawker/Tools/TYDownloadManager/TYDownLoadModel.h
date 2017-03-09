@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SXHcModel.h"
+#import "TYDownloadUtility.h"
+//#import "ZFDownloadManager.h"
 
 // 下载状态
 typedef NS_ENUM(NSUInteger, TYDownloadState) {
@@ -20,6 +23,21 @@ typedef NS_ENUM(NSUInteger, TYDownloadState) {
 
 @class TYDownloadProgress;
 @class TYDownloadModel;
+
+// 缓存主目录
+#define TYCachesDirectory [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]stringByAppendingPathComponent:@"ZFCache"]
+
+// 保存文件名
+#define TYFileName(url)  [[url componentsSeparatedByString:@"/"] lastObject]
+
+// 文件的存放路径（caches）
+#define TYFileFullpath(url) [TYCachesDirectory stringByAppendingPathComponent:TYFileName(url)]
+
+// 文件的已下载长度
+#define TYDownloadLength(url) [[[NSFileManager defaultManager] attributesOfItemAtPath:TYFileFullpath(url) error:nil][NSFileSize] integerValue]
+
+// 存储文件信息的路径（caches）
+#define TYDownloadDetailPath [TYCachesDirectory stringByAppendingPathComponent:@"downloadDetail.db"]
 
 // 进度更新block
 typedef void (^TYDownloadProgressBlock)(TYDownloadProgress *progress);
@@ -47,7 +65,7 @@ typedef void (^TYDownloadStateBlock)(TYDownloadState state,NSString *filePath, N
 // 文件流
 @property (nonatomic, strong, readonly) NSOutputStream *stream;
 // 下载进度
-@property (nonatomic, strong ,readonly) TYDownloadProgress *progress;
+@property (nonatomic, strong) TYDownloadProgress *progress;
 // 下载路径 如果设置了downloadDirectory，文件下载完成后会移动到这个目录，否则，在manager默认cache目录里
 @property (nonatomic, strong, readonly) NSString *filePath;
 
@@ -56,6 +74,8 @@ typedef void (^TYDownloadStateBlock)(TYDownloadState state,NSString *filePath, N
 @property (nonatomic, copy) TYDownloadProgressBlock progressBlock;
 // 下载状态更新block
 @property (nonatomic, copy) TYDownloadStateBlock stateBlock;
+
+@property(nonatomic,strong) SXHcModel *hcModel;
 
 
 - (instancetype)initWithURLString:(NSString *)URLString;
@@ -75,19 +95,19 @@ typedef void (^TYDownloadStateBlock)(TYDownloadState state,NSString *filePath, N
 @interface TYDownloadProgress : NSObject
 
 // 续传大小
-@property (nonatomic, assign, readonly) int64_t resumeBytesWritten;
+@property (nonatomic, assign) int64_t resumeBytesWritten;
 // 这次写入的数量
-@property (nonatomic, assign, readonly) int64_t bytesWritten;
+@property (nonatomic, assign) int64_t bytesWritten;
 // 已下载的数量
-@property (nonatomic, assign, readonly) int64_t totalBytesWritten;
+@property (nonatomic, assign) int64_t totalBytesWritten;
 // 文件的总大小
-@property (nonatomic, assign, readonly) int64_t totalBytesExpectedToWrite;
+@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
 // 下载进度
-@property (nonatomic, assign, readonly) float progress;
+@property (nonatomic, assign) float progress;
 // 下载速度
-@property (nonatomic, assign, readonly) float speed;
+@property (nonatomic, assign) float speed;
 // 下载剩余时间
-@property (nonatomic, assign, readonly) int remainingTime;
+@property (nonatomic, assign) int remainingTime;
 
 
 @end

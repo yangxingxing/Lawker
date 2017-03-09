@@ -32,23 +32,23 @@
 /**
  *  下载进度
  */
-@interface TYDownloadProgress ()
-// 续传大小
-@property (nonatomic, assign) int64_t resumeBytesWritten;
-// 这次写入的数量
-@property (nonatomic, assign) int64_t bytesWritten;
-// 已下载的数量
-@property (nonatomic, assign) int64_t totalBytesWritten;
-// 文件的总大小
-@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
-// 下载进度
-@property (nonatomic, assign) float progress;
-// 下载速度
-@property (nonatomic, assign) float speed;
-// 下载剩余时间
-@property (nonatomic, assign) int remainingTime;
-
-@end
+//@interface TYDownloadProgress ()
+//// 续传大小
+//@property (nonatomic, assign) int64_t resumeBytesWritten;
+//// 这次写入的数量
+//@property (nonatomic, assign) int64_t bytesWritten;
+//// 已下载的数量
+//@property (nonatomic, assign) int64_t totalBytesWritten;
+//// 文件的总大小
+//@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
+//// 下载进度
+//@property (nonatomic, assign) float progress;
+//// 下载速度
+//@property (nonatomic, assign) float speed;
+//// 下载剩余时间
+//@property (nonatomic, assign) int remainingTime;
+//
+//@end
 
 
 @interface TYDownLoadDataManager ()
@@ -125,7 +125,7 @@
 - (NSString *)downloadDirectory
 {
     if (!_downloadDirectory) {
-        _downloadDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"TYDownlodDataCache"];
+        _downloadDirectory = TYCachesDirectory;
         [self createDirectory:_downloadDirectory];
     }
     return _downloadDirectory;
@@ -291,7 +291,7 @@
         [request setValue:range forHTTPHeaderField:@"Range"];
         
         // 创建流
-        downloadModel.stream = [NSOutputStream outputStreamToFileAtPath:downloadModel.filePath append:YES];
+        downloadModel.stream = [NSOutputStream outputStreamToFileAtPath:TYFileFullpath(downloadModel.downloadURL) append:YES];
         
         downloadModel.downloadDate = [NSDate date];
         self.downloadingModelDic[downloadModel.downloadURL] = downloadModel;

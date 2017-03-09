@@ -18,10 +18,15 @@
         
         NSURL *url = [NSURL URLWithString:@"http://lawker.cn"];
         //NSURL *url = [NSURL URLWithString:@"http://localhost/"];
+        // 2.设置非校验证书模式
+        instance.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+        instance.securityPolicy.allowInvalidCertificates = YES;
+        [instance.securityPolicy setValidatesDomainName:NO];
         
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
         
         instance = [[self alloc]initWithBaseURL:url sessionConfiguration:config];
+        
         
         instance.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/html", nil];
     });

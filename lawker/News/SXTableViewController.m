@@ -49,6 +49,7 @@
     //NSInteger now = [[[NSDate alloc] init] timeIntervalSince1970];
     NSString *path = [NSString stringWithFormat:@"/banner.html"];
     
+    __weak typeof(self) wSelf = self;
     [[[SXNetworkTools sharedNetworkTools]GET:path parameters:nil progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
             NSArray *adArray = [responseObject valueForKey:@"T1"];
         
@@ -58,6 +59,7 @@
         
         
       } failure:^(NSURLSessionDataTask *task, NSError *error) {
+          [wSelf.tableView headerEndRefreshing];
                 //NSLog(@"%@",error);
       }] resume];
 }
@@ -182,15 +184,32 @@
         if (type == 1) {
             self.arrayList = arrayM;
             [self.tableView headerEndRefreshing];
-            [self.tableView reloadData];
         }else if(type == 2){
             [self.arrayList addObjectsFromArray:arrayM];
             
             [self.tableView footerEndRefreshing];
-            [self.tableView reloadData];
         }
+        if (![UserComm showReleaseFunction]) {
+            NSInteger loc = 0;
+            NSInteger len = 0;
+            for (SXNewsModel *model in self.arrayList) {
+                if ([model.moreTitle isEqualToString:@"洛客直播"]) {
+                    loc = [self.arrayList indexOfObject:model];
+                } else if ([model.moreTitle isEqualToString:@"法律教育"]) {
+                    len = [self.arrayList indexOfObject:model] - loc;
+                }
+            }
+            [self.arrayList removeObjectsInRange:NSMakeRange(loc, len)];
+        }
+        
+        [self.tableView reloadData];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         //NSLog(@"%@",error);
+        if (type == 1) {
+            [self.tableView headerEndRefreshing];
+        }else if(type == 2){
+            [self.tableView footerEndRefreshing];
+        }
     }] resume];
 }// ------想把这里改成block来着
 

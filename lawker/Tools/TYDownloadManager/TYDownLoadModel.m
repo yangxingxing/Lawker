@@ -9,20 +9,6 @@
 #import "TYDownloadModel.h"
 
 @interface TYDownloadProgress ()
-// 续传大小
-@property (nonatomic, assign) int64_t resumeBytesWritten;
-// 这次写入的数量
-@property (nonatomic, assign) int64_t bytesWritten;
-// 已下载的数量
-@property (nonatomic, assign) int64_t totalBytesWritten;
-// 文件的总大小
-@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
-// 下载进度
-@property (nonatomic, assign) float progress;
-// 下载速度
-@property (nonatomic, assign) float speed;
-// 下载剩余时间
-@property (nonatomic, assign) int remainingTime;
 
 @end
 
@@ -66,15 +52,15 @@
 
 - (instancetype)initWithURLString:(NSString *)URLString
 {
-    return [self initWithURLString:URLString filePath:nil];
+    _downloadURL = URLString;
+    return [self initWithURLString:URLString filePath:self.filePath];
 }
 
 - (instancetype)initWithURLString:(NSString *)URLString filePath:(NSString *)filePath
 {
     if (self = [self init]) {
-        _downloadURL = URLString;
-        _fileName = filePath.lastPathComponent;
-        _downloadDirectory = filePath.stringByDeletingLastPathComponent;
+//        _fileName = filePath.lastPathComponent;
+//        _downloadDirectory = filePath.stringByDeletingLastPathComponent;
         _filePath = filePath;
     }
     return self;
@@ -83,7 +69,7 @@
 -(NSString *)fileName
 {
     if (!_fileName) {
-        _fileName = _downloadURL.lastPathComponent;
+        _fileName = TYFileName(_downloadURL);
     }
     return _fileName;
 }
@@ -91,7 +77,7 @@
 - (NSString *)downloadDirectory
 {
     if (!_downloadDirectory) {
-        _downloadDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"TYDownloadCache"];
+        _downloadDirectory = TYCachesDirectory;
     }
     return _downloadDirectory;
 }
@@ -99,13 +85,63 @@
 - (NSString *)filePath
 {
     if (!_filePath) {
-        _filePath = [self.downloadDirectory stringByAppendingPathComponent:self.fileName];
+        _filePath = [NSString stringWithFormat:@"%@/%@",self.downloadDirectory,TYFileFullpath(_downloadURL)]; // 拼接Url
     }
     return _filePath;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder //将属性进行编码
+{
+    [aCoder encodeObject:self.downloadURL forKey:@"downloadURL"];
+    [aCoder encodeObject:self.fileName forKey:@"fileName"];
+    [aCoder encodeObject:self.hcModel forKey:@"hcModel"];
+    [aCoder encodeObject:self.progress forKey:@"progress"];
+    [aCoder encodeInteger:self.state forKey:@"state"];
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder //将属性进行解码
+{
+    self = [super init];
+    if (self) {
+        self.downloadURL = [aDecoder decodeObjectForKey:@"downloadURL"];
+        self.fileName = [aDecoder decodeObjectForKey:@"fileName"];
+        self.hcModel = [aDecoder decodeObjectForKey:@"hcModel"];
+        self.progress = [aDecoder decodeObjectForKey:@"progress"];
+        self.state = [aDecoder decodeIntegerForKey:@"state"];
+    }
+    return self;
 }
 
 @end
 
 @implementation TYDownloadProgress
+
+- (void)encodeWithCoder:(NSCoder *)aCoder //将属性进行编码
+{
+    [aCoder encodeInt64:self.resumeBytesWritten forKey:@"resumeBytesWritten"];
+    [aCoder encodeInt64:self.bytesWritten forKey:@"bytesWritten"];
+    [aCoder encodeInt64:self.totalBytesWritten forKey:@"totalBytesWritten"];
+    [aCoder encodeInt64:self.totalBytesExpectedToWrite forKey:@"totalBytesExpectedToWrite"];
+    [aCoder encodeFloat:self.progress forKey:@"progress"];
+    [aCoder encodeFloat:self.speed forKey:@"speed"];
+    [aCoder encodeInt:self.remainingTime forKey:@"remainingTime"];
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder //将属性进行解码
+{
+    self = [super init];
+    if (self) {
+        self.resumeBytesWritten = [aDecoder decodeInt64ForKey:@"resumeBytesWritten"];
+        self.bytesWritten = [aDecoder decodeInt64ForKey:@"bytesWritten"];
+        self.totalBytesWritten = [aDecoder decodeInt64ForKey:@"totalBytesWritten"];
+        self.totalBytesExpectedToWrite = [aDecoder decodeInt64ForKey:@"totalBytesExpectedToWrite"];
+        
+        self.progress = [aDecoder decodeFloatForKey:@"progress"];
+        self.speed = [aDecoder decodeFloatForKey:@"speed"];
+        self.remainingTime = [aDecoder decodeIntForKey:@"remainingTime"];
+        
+    }
+    return self;
+}
 
 @end

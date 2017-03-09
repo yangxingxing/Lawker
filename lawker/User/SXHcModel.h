@@ -15,5 +15,6 @@
 @property (nonatomic,copy) NSString *imgsrc;
 @property (nonatomic,copy) NSString *skipID;
 @property (nonatomic,copy) NSString *cout;
+@property (nonatomic,copy) NSString *videoId;
 
 @end

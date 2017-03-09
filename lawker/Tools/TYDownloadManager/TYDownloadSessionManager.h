@@ -13,7 +13,7 @@
 /**
  *  下载管理类 封装NSURLSessionDownloadTask
  */
-@interface TYDownloadSessionManager : NSObject<NSURLSessionDownloadDelegate>
+@interface TYDownloadSessionManager : NSObject<NSURLSessionDownloadDelegate,NSURLSessionDataDelegate>
 
 // 下载代理
 @property (nonatomic,weak) id<TYDownloadDelegate> delegate;
@@ -23,6 +23,8 @@
 
 // 等待中的模型 只读
 @property (nonatomic, strong,readonly) NSMutableArray *downloadingModels;
+// 下载模型字典 key = url, value = model
+@property (nonatomic, strong) NSMutableDictionary *downloadingModelDic;
 
 // 最大下载数
 @property (nonatomic, assign) NSInteger maxDownloadCount;

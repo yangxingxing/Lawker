@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
+#import "SXHcModel.h"
 
 typedef NS_ENUM(NSInteger, DownloadState){
     DownloadStateStart = 0,     /** 下载中 */
@@ -50,11 +51,23 @@ typedef void(^ZFDownloadStateBlock)(DownloadState state);
 /** 获得服务器这次请求 返回数据的总长度 */
 @property (nonatomic, assign) NSInteger totalLength;
 
+// 下载任务
+@property (nonatomic, strong) NSURLSessionTask *task;
+
 /** 下载进度 */
 @property (atomic, copy) ZFDownloadProgressBlock progressBlock;
 
 /** 下载状态 */
 @property (atomic, copy) ZFDownloadStateBlock stateBlock;
+// 自动重连次数
+@property (nonatomic,assign) int downLoadCount;
+
+// 文件是否下载完成
+@property (nonatomic,assign) DownloadState state;
+
+@property (nonatomic,assign) BOOL isDelete;
+
+@property(nonatomic,strong) SXHcModel *hcModel;
 
 - (float)calculateFileSizeInUnit:(unsigned long long)contentLength;
 

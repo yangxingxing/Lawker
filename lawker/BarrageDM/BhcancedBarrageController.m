@@ -53,6 +53,7 @@
     self.navigationItem.title = b;
     
     _playerView = [[XCAVPlayerView alloc]init];
+    _playerView.owner = self;
     UIView *playBgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 0.6)];
     [self.view addSubview:playBgView];
     self.playerView.frame = playBgView.bounds;

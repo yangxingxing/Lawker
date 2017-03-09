@@ -25,6 +25,15 @@
 @property (weak, nonatomic) IBOutlet UILabel *tuser2;
 
 @property (weak, nonatomic) IBOutlet UILabel *size;
+@property (weak, nonatomic) IBOutlet UIButton *weixinBtn;
+@property (weak, nonatomic) IBOutlet UIButton *weiboBtn;
+@property (weak, nonatomic) IBOutlet UIButton *QQBtn;
+
+@property (weak, nonatomic) IBOutlet UITextField *otherAccountLogin;
+@property (weak, nonatomic) IBOutlet UIButton *ShoppingCart;
+@property (weak, nonatomic) IBOutlet UIImageView *rightImage;
+@property (weak, nonatomic) IBOutlet UILabel *myOrder;
+@property (weak, nonatomic) IBOutlet UIButton *myOrderBtn;
 
 @end
 
@@ -58,7 +67,6 @@
         _pass.text = dic[@"pass"];
         [self login:dic[@"uid"]];
     }
-    
 }
 
 - (IBAction)qchc:(id)sender {
@@ -121,6 +129,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [self getAppVersion];
     NSArray *arr = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cachePath = [arr lastObject];
     
@@ -169,6 +178,7 @@
     NSString *allUrlstring = [NSString stringWithFormat:@"/login/%@/%@.html",[_user.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],_pass.text];
     //NSLog(@"%@",allUrlstring);
     [[[SXNetworkTools sharedNetworkTools]GET:allUrlstring parameters:nil progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
+        [hud hide:YES];
         NSString *key = [responseObject.keyEnumerator nextObject];
         
         NSArray *temArray = responseObject[key];
@@ -180,7 +190,6 @@
             app.pass = _pass.text;
             app.addres = 0;
             app.wan = 0;
-           [hud hide:YES];
             if([_user.text isEqualToString:@"QQ快捷登录用户"]||[_user.text isEqualToString:@"WX快捷登录用户"]||[_user.text isEqualToString:@"WB快捷登录用户"]){
             app.d3 = 1;
             }else{
@@ -220,7 +229,6 @@
             AppDelegate *app = (AppDelegate*)[[UIApplication sharedApplication] delegate];
             
             app.uid = 0;
-            [hud hide:YES];
             _user1.hidden = NO;
             _user2.hidden = YES;
             _user.text = @"";
@@ -229,6 +237,7 @@
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         //NSLog(@"%@",error);
+        [hud hide:YES];
     }] resume];
     
 }
@@ -439,5 +448,25 @@
     
     [content writeToFile:filePath atomically:YES];
 }
+
+- (void)getAppVersion {
+    [self hiddenBtn:![UserComm showReleaseFunction]];
+}
+
+- (void)hiddenBtn:(BOOL)hidden {
+    _weiboBtn.hidden = hidden;
+    _QQBtn.hidden = hidden;
+    _weixinBtn.hidden = hidden;
+    _otherAccountLogin.hidden = hidden;
+    if (hidden) {
+        _ShoppingCart.userInteractionEnabled = NO;
+        [_ShoppingCart setTitle:@"欢迎使用洛客APP" forState:UIControlStateNormal];
+        _rightImage.hidden = YES;
+        _myOrderBtn.userInteractionEnabled = NO;
+        _myOrder.text = @"敬请期待";
+    }
+    
+}
+
 
 @end

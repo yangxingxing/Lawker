@@ -179,6 +179,15 @@
 		1AFB55041DEE987C00337C9F /* SXErtailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFB54FF1DEE987C00337C9F /* SXErtailModel.m */; };
 		1AFB55051DEE987C00337C9F /* SXErvCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFB55011DEE987C00337C9F /* SXErvCell.m */; };
 		1AFB55061DEE987C00337C9F /* SXErviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFB55031DEE987C00337C9F /* SXErviewController.m */; };
+		1C1B40BE1E64156B00B4CBB2 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B40BD1E64156B00B4CBB2 /* UIColor+Hex.m */; };
+		1C2535E11E6D0421002D009E /* NSDictionary+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C2535E01E6D0421002D009E /* NSDictionary+Custom.m */; };
+		1C2E91601E61679D00E7A127 /* TYDownLoadDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C2E91581E61679D00E7A127 /* TYDownLoadDataManager.m */; };
+		1C2E91611E61679D00E7A127 /* TYDownLoadModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C2E915B1E61679D00E7A127 /* TYDownLoadModel.m */; };
+		1C2E91621E61679D00E7A127 /* TYDownloadSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C2E915D1E61679D00E7A127 /* TYDownloadSessionManager.m */; };
+		1C2E91631E61679D00E7A127 /* TYDownloadUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C2E915F1E61679D00E7A127 /* TYDownloadUtility.m */; };
+		1C917F4D1E68F67300CFB210 /* UserComm.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C917F4C1E68F67300CFB210 /* UserComm.m */; };
+		1CCD89341E6020F9002BF896 /* ZFDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD89311E6020F9002BF896 /* ZFDownloadManager.m */; };
+		1CCD89351E6020F9002BF896 /* ZFSessionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD89331E6020F9002BF896 /* ZFSessionModel.m */; };
 		1CD0FC231E5FCEAB00E7E074 /* AlipaySDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1CD0FBD61E5FCEAB00E7E074 /* AlipaySDK.bundle */; };
 		1CD0FC241E5FCEAB00E7E074 /* AlipaySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD0FBD71E5FCEAB00E7E074 /* AlipaySDK.framework */; };
 		1CD0FC251E5FCEAB00E7E074 /* ShareSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD0FBD91E5FCEAB00E7E074 /* ShareSDK.framework */; };
@@ -216,9 +225,9 @@
 		1CD0FC451E5FCEAB00E7E074 /* WXUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1CD0FC1B1E5FCEAB00E7E074 /* WXUtil.mm */; };
 		1CD0FC461E5FCEAB00E7E074 /* libXG-SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD0FC1F1E5FCEAB00E7E074 /* libXG-SDK.a */; };
 		1CD0FC471E5FCEAB00E7E074 /* ReleaseNotes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1CD0FC201E5FCEAB00E7E074 /* ReleaseNotes.txt */; };
-		1CD0FC491E5FD1DD00E7E074 /* Bugly.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD0FC481E5FD1DD00E7E074 /* Bugly.framework */; };
 		1CD0FC4B1E5FD24000E7E074 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD0FC4A1E5FD24000E7E074 /* Security.framework */; };
 		1CD0FC4D1E5FD26700E7E074 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD0FC4C1E5FD26700E7E074 /* libc++.tbd */; };
+		1CD9E7041E65BB6D00B6A0CB /* NSDateCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9E7031E65BB6D00B6A0CB /* NSDateCategory.m */; };
 		1D007F501B6D114900EA119C /* MJExtensionConst.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D007F411B6D114900EA119C /* MJExtensionConst.m */; };
 		1D007F511B6D114900EA119C /* MJFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D007F431B6D114900EA119C /* MJFoundation.m */; };
 		1D007F521B6D114900EA119C /* MJProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D007F451B6D114900EA119C /* MJProperty.m */; };
@@ -685,6 +694,25 @@
 		1AFB55011DEE987C00337C9F /* SXErvCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXErvCell.m; path = Erview/SXErvCell.m; sourceTree = "<group>"; };
 		1AFB55021DEE987C00337C9F /* SXErviewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXErviewController.h; path = Erview/SXErviewController.h; sourceTree = "<group>"; };
 		1AFB55031DEE987C00337C9F /* SXErviewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXErviewController.m; path = Erview/SXErviewController.m; sourceTree = "<group>"; };
+		1C1B40BC1E64156B00B4CBB2 /* UIColor+Hex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Hex.h"; sourceTree = "<group>"; };
+		1C1B40BD1E64156B00B4CBB2 /* UIColor+Hex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Hex.m"; sourceTree = "<group>"; };
+		1C2535DF1E6D0421002D009E /* NSDictionary+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Custom.h"; sourceTree = "<group>"; };
+		1C2535E01E6D0421002D009E /* NSDictionary+Custom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Custom.m"; sourceTree = "<group>"; };
+		1C2E91571E61679D00E7A127 /* TYDownLoadDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYDownLoadDataManager.h; sourceTree = "<group>"; };
+		1C2E91581E61679D00E7A127 /* TYDownLoadDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYDownLoadDataManager.m; sourceTree = "<group>"; };
+		1C2E91591E61679D00E7A127 /* TYDownloadDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYDownloadDelegate.h; sourceTree = "<group>"; };
+		1C2E915A1E61679D00E7A127 /* TYDownLoadModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYDownLoadModel.h; sourceTree = "<group>"; };
+		1C2E915B1E61679D00E7A127 /* TYDownLoadModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYDownLoadModel.m; sourceTree = "<group>"; };
+		1C2E915C1E61679D00E7A127 /* TYDownloadSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYDownloadSessionManager.h; sourceTree = "<group>"; };
+		1C2E915D1E61679D00E7A127 /* TYDownloadSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYDownloadSessionManager.m; sourceTree = "<group>"; };
+		1C2E915E1E61679D00E7A127 /* TYDownloadUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYDownloadUtility.h; sourceTree = "<group>"; };
+		1C2E915F1E61679D00E7A127 /* TYDownloadUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYDownloadUtility.m; sourceTree = "<group>"; };
+		1C917F4B1E68F67300CFB210 /* UserComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComm.h; sourceTree = "<group>"; };
+		1C917F4C1E68F67300CFB210 /* UserComm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserComm.m; sourceTree = "<group>"; };
+		1CCD89301E6020F9002BF896 /* ZFDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFDownloadManager.h; sourceTree = "<group>"; };
+		1CCD89311E6020F9002BF896 /* ZFDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFDownloadManager.m; sourceTree = "<group>"; };
+		1CCD89321E6020F9002BF896 /* ZFSessionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFSessionModel.h; sourceTree = "<group>"; };
+		1CCD89331E6020F9002BF896 /* ZFSessionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFSessionModel.m; sourceTree = "<group>"; };
 		1CD0FBD61E5FCEAB00E7E074 /* AlipaySDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = AlipaySDK.bundle; sourceTree = "<group>"; };
 		1CD0FBD71E5FCEAB00E7E074 /* AlipaySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlipaySDK.framework; sourceTree = "<group>"; };
 		1CD0FBD91E5FCEAB00E7E074 /* ShareSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ShareSDK.framework; sourceTree = "<group>"; };
@@ -748,9 +776,11 @@
 		1CD0FC201E5FCEAB00E7E074 /* ReleaseNotes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseNotes.txt; sourceTree = "<group>"; };
 		1CD0FC211E5FCEAB00E7E074 /* XGPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGPush.h; sourceTree = "<group>"; };
 		1CD0FC221E5FCEAB00E7E074 /* XGSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGSetting.h; sourceTree = "<group>"; };
-		1CD0FC481E5FD1DD00E7E074 /* Bugly.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bugly.framework; sourceTree = "<group>"; };
 		1CD0FC4A1E5FD24000E7E074 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		1CD0FC4C1E5FD26700E7E074 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		1CD9E7021E65BB6D00B6A0CB /* NSDateCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDateCategory.h; sourceTree = "<group>"; };
+		1CD9E7031E65BB6D00B6A0CB /* NSDateCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDateCategory.m; sourceTree = "<group>"; };
+		1CD9E7051E65BBE000B6A0CB /* wConsts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wConsts.h; sourceTree = "<group>"; };
 		1D007F3F1B6D114900EA119C /* MJExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MJExtension.h; sourceTree = "<group>"; };
 		1D007F401B6D114900EA119C /* MJExtensionConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MJExtensionConst.h; sourceTree = "<group>"; };
 		1D007F411B6D114900EA119C /* MJExtensionConst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MJExtensionConst.m; sourceTree = "<group>"; };
@@ -930,7 +960,6 @@
 				1CD0FC3B1E5FCEAB00E7E074 /* MOBFoundation.framework in Frameworks */,
 				1ABD34011E09332A0000D50A /* AVFoundation.framework in Frameworks */,
 				1ABD33FF1E09331E0000D50A /* AVKit.framework in Frameworks */,
-				1CD0FC491E5FD1DD00E7E074 /* Bugly.framework in Frameworks */,
 				1AACE64F1E037B0B00B364E8 /* MobileCoreServices.framework in Frameworks */,
 				1CD0FC331E5FCEAB00E7E074 /* libAPOpenSdk.a in Frameworks */,
 				1CD0FC2F1E5FCEAB00E7E074 /* QQConnector.framework in Frameworks */,
@@ -1507,6 +1536,33 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		1C2E91561E61679D00E7A127 /* TYDownloadManager */ = {
+			isa = PBXGroup;
+			children = (
+				1C2E91571E61679D00E7A127 /* TYDownLoadDataManager.h */,
+				1C2E91581E61679D00E7A127 /* TYDownLoadDataManager.m */,
+				1C2E91591E61679D00E7A127 /* TYDownloadDelegate.h */,
+				1C2E915A1E61679D00E7A127 /* TYDownLoadModel.h */,
+				1C2E915B1E61679D00E7A127 /* TYDownLoadModel.m */,
+				1C2E915C1E61679D00E7A127 /* TYDownloadSessionManager.h */,
+				1C2E915D1E61679D00E7A127 /* TYDownloadSessionManager.m */,
+				1C2E915E1E61679D00E7A127 /* TYDownloadUtility.h */,
+				1C2E915F1E61679D00E7A127 /* TYDownloadUtility.m */,
+			);
+			path = TYDownloadManager;
+			sourceTree = "<group>";
+		};
+		1CCD892F1E6020F9002BF896 /* ZFDownload */ = {
+			isa = PBXGroup;
+			children = (
+				1CCD89301E6020F9002BF896 /* ZFDownloadManager.h */,
+				1CCD89311E6020F9002BF896 /* ZFDownloadManager.m */,
+				1CCD89321E6020F9002BF896 /* ZFSessionModel.h */,
+				1CCD89331E6020F9002BF896 /* ZFSessionModel.m */,
+			);
+			path = ZFDownload;
+			sourceTree = "<group>";
+		};
 		1CD0FBD51E5FCEAB00E7E074 /* AlipaySDK */ = {
 			isa = PBXGroup;
 			children = (
@@ -1791,7 +1847,6 @@
 		1D2A592E1A700840001F9B8E /* Vender */ = {
 			isa = PBXGroup;
 			children = (
-				1CD0FC481E5FD1DD00E7E074 /* Bugly.framework */,
 				1CD0FBD51E5FCEAB00E7E074 /* AlipaySDK */,
 				1CD0FBD81E5FCEAB00E7E074 /* ShareSDK */,
 				1CD0FC0B1E5FCEAB00E7E074 /* UMessage_Sdk_1.4.0 */,
@@ -1898,6 +1953,11 @@
 		1D2A597F1A70086B001F9B8E /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				1C2E91561E61679D00E7A127 /* TYDownloadManager */,
+				1CCD892F1E6020F9002BF896 /* ZFDownload */,
+				1CD9E7051E65BBE000B6A0CB /* wConsts.h */,
+				1CD9E7021E65BB6D00B6A0CB /* NSDateCategory.h */,
+				1CD9E7031E65BB6D00B6A0CB /* NSDateCategory.m */,
 				1A820A951E0D087500E9D981 /* LXNetworking.h */,
 				1A820A961E0D087500E9D981 /* LXNetworking.m */,
 				1AA831DE1E0BD7A500DC0904 /* JSDropDownMenu.h */,
@@ -1912,6 +1972,12 @@
 				1DE822B11C58B68500E965C1 /* UILabel+Wonderful.m */,
 				1A92451C1DFA9B1A00EBB06D /* NSString+MD5.h */,
 				1A92451D1DFA9B4900EBB06D /* NSString+MD5.m */,
+				1C1B40BC1E64156B00B4CBB2 /* UIColor+Hex.h */,
+				1C1B40BD1E64156B00B4CBB2 /* UIColor+Hex.m */,
+				1C917F4B1E68F67300CFB210 /* UserComm.h */,
+				1C917F4C1E68F67300CFB210 /* UserComm.m */,
+				1C2535DF1E6D0421002D009E /* NSDictionary+Custom.h */,
+				1C2535E01E6D0421002D009E /* NSDictionary+Custom.m */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -1983,7 +2049,7 @@
 				TargetAttributes = {
 					1D2A59041A700822001F9B8E = {
 						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = TPTRT82JVA;
+						DevelopmentTeam = C9J4XWDVX6;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -2063,6 +2129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AACE6AC1E03BBE900B364E8 /* AFURLConnectionOperation.m in Sources */,
+				1CCD89341E6020F9002BF896 /* ZFDownloadManager.m in Sources */,
 				1D007F541B6D114900EA119C /* NSObject+MJCoding.m in Sources */,
 				1ADA2B5F1E34C34D001E96AB /* IQUIViewController+Additions.m in Sources */,
 				1CD0FC431E5FCEAB00E7E074 /* payRequsestHandler.mm in Sources */,
@@ -2071,6 +2138,7 @@
 				1ABD31D21E08F6180000D50A /* AdvancedBarrageController.m in Sources */,
 				1ACC45741E14F9EB007B3E2C /* openssl_wrapper.m in Sources */,
 				1ACC45721E14F9EB007B3E2C /* MD5DataSigner.m in Sources */,
+				1C2E91611E61679D00E7A127 /* TYDownLoadModel.m in Sources */,
 				1A6C52961DFFED8F00B550C4 /* SXAddresCell.m in Sources */,
 				1A8EE5B11E10E06800D6B16C /* SXBuyModel.m in Sources */,
 				1ABDA9E21E076A5100FA1C03 /* SXJfModel.m in Sources */,
@@ -2084,15 +2152,18 @@
 				1D6BE37B1A84B04600BF1AB7 /* SXNavController.m in Sources */,
 				1A820AB21E0D09C300E9D981 /* AFImageDownloader.m in Sources */,
 				1A546AC51E0A1DCA00D3B561 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
+				1C917F4D1E68F67300CFB210 /* UserComm.m in Sources */,
 				1A82BC471E124C96003AAC27 /* SXPayiewController.m in Sources */,
 				1A546ACC1E0A1DCA00D3B561 /* XCSpeedView.m in Sources */,
 				1A98713A1E0E4FF8002823FC /* SXBhcCell.m in Sources */,
+				1C2535E11E6D0421002D009E /* NSDictionary+Custom.m in Sources */,
 				1A546ADF1E0A352200D3B561 /* SXAdvCell.m in Sources */,
 				1A98712C1E0E081F002823FC /* SXHcCell.m in Sources */,
 				1ACC45701E14F9EB007B3E2C /* DataSigner.m in Sources */,
 				1D58EED01A70A42100411E39 /* SXTableViewController.m in Sources */,
 				1A820AB71E0D09C300E9D981 /* UIProgressView+AFNetworking.m in Sources */,
 				1A9245171DFA564900EBB06D /* SXShop.m in Sources */,
+				1C2E91621E61679D00E7A127 /* TYDownloadSessionManager.m in Sources */,
 				1A8EE5A31E10B09500D6B16C /* SXShoviewController.m in Sources */,
 				1A546ABE1E0A1DCA00D3B561 /* MASCompositeConstraint.m in Sources */,
 				1ABD32641E08F6300000D50A /* BarrageWalkTextSprite.m in Sources */,
@@ -2111,6 +2182,7 @@
 				1DE822B21C58B68500E965C1 /* UILabel+Wonderful.m in Sources */,
 				1ABD32571E08F6300000D50A /* BarrageClock.m in Sources */,
 				1D2A59681A700840001F9B8E /* AFNetworkReachabilityManager.m in Sources */,
+				1C2E91601E61679D00E7A127 /* TYDownLoadDataManager.m in Sources */,
 				1D58EEC81A70924A00411E39 /* SXNewsModel.m in Sources */,
 				1D2A59701A700840001F9B8E /* SDImageCache.m in Sources */,
 				1A546ACA1E0A1DCA00D3B561 /* XCMarqueeView.m in Sources */,
@@ -2156,6 +2228,7 @@
 				1A546AC01E0A1DCA00D3B561 /* MASConstraintMaker.m in Sources */,
 				1A820AB31E0D09C300E9D981 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				1ACC45711E14F9EB007B3E2C /* DataVerifier.m in Sources */,
+				1CD9E7041E65BB6D00B6A0CB /* NSDateCategory.m in Sources */,
 				1A9983A61DF90EAF00C72216 /* SXSsCell.m in Sources */,
 				1D2021201B5A572700F38C4C /* SXTabBar.m in Sources */,
 				1AA831E21E0BD7A500DC0904 /* JSDropDownMenu.m in Sources */,
@@ -2175,11 +2248,13 @@
 				1A245FAD1E022D500075C0DE /* SXMsmCell.m in Sources */,
 				1A892A5A1DF66CAA0027C3DC /* SXUrl.m in Sources */,
 				1ABDA9E31E076A5100FA1C03 /* SXJfCell.m in Sources */,
+				1C2E91631E61679D00E7A127 /* TYDownloadUtility.m in Sources */,
 				1A6C52A91DFFF83300B550C4 /* SXKcModel.m in Sources */,
 				1AACE6B31E03E6C700B364E8 /* SXScCell.m in Sources */,
 				1A8EE5B41E11185700D6B16C /* SXBuviewController.m in Sources */,
 				1A8EE5AF1E10E06800D6B16C /* SXBuyCell.m in Sources */,
 				1A245FB61E0291ED0075C0DE /* SXVideoCell.m in Sources */,
+				1C1B40BE1E64156B00B4CBB2 /* UIColor+Hex.m in Sources */,
 				1A546AC31E0A1DCA00D3B561 /* MASViewConstraint.m in Sources */,
 				1A546AC91E0A1DCA00D3B561 /* XCBrightnessView.m in Sources */,
 				1D925CD21A87CA030063921A /* UIView+MJExtension.m in Sources */,
@@ -2251,6 +2326,7 @@
 				1ABD32561E08F6300000D50A /* BarrageCanvas.m in Sources */,
 				1A9871391E0E4FF8002823FC /* BhcancedBarrageController.m in Sources */,
 				1D925CD01A87CA030063921A /* UIScrollView+MJExtension.m in Sources */,
+				1CCD89351E6020F9002BF896 /* ZFSessionModel.m in Sources */,
 				1ADA2B601E34C34D001E96AB /* IQUIWindow+Hierarchy.m in Sources */,
 				1A546AC71E0A1DCA00D3B561 /* ViewController+MASAdditions.m in Sources */,
 				1A82BC481E124C96003AAC27 /* SXPayModel.m in Sources */,
@@ -2275,6 +2351,111 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1C1B40C01E641A6C00B4CBB2 /* add-hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "012b9b46-d9ad-49ad-a18c-335a566848e3";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "add-hoc";
+		};
+		1C1B40C11E641A6C00B4CBB2 /* add-hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = lawker/lawker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Lawtotem EducationConsulting Co.,Ltd. (C9J4XWDVX6)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C9J4XWDVX6;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/",
+					lawker,
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/ShareSDK",
+					"$(PROJECT_DIR)/ShareSDK/Support/Optional",
+					"$(PROJECT_DIR)/ShareSDK/Support/PlatformConnector",
+					"$(PROJECT_DIR)/ShareSDK/Support/PlatformSDK/QQSDK",
+					"$(PROJECT_DIR)/ShareSDK/Support/Required",
+					"$(PROJECT_DIR)/AlipaySDK",
+					"$(PROJECT_DIR)/lawker/Vender/AlipaySDK",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/Optional",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/PlatformConnector",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/PlatformSDK/QQSDK",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/Required",
+					"$(PROJECT_DIR)/lawker/Vender",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/lawker/NetEasyPrefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/lawker/Vender",
+				);
+				INFOPLIST_FILE = lawker/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ShareSDK/Support/PlatformSDK/APSocialSDK",
+					"$(PROJECT_DIR)/ShareSDK/Support/PlatformSDK/SinaWeiboSDK",
+					"$(PROJECT_DIR)/ShareSDK/Support/PlatformSDK/WeChatSDK",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/XG-sdk",
+					"$(PROJECT_DIR)/WeixinSDK",
+					"$(PROJECT_DIR)/UMessage_Sdk_1.4.0",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/PlatformSDK/APSocialSDK",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/PlatformSDK/SinaWeiboSDK",
+					"$(PROJECT_DIR)/lawker/Vender/ShareSDK/Support/PlatformSDK/WeChatSDK",
+					"$(PROJECT_DIR)/lawker/Vender/UMessage_Sdk_1.4.0",
+					"$(PROJECT_DIR)/lawker/Vender/WeixinSDK",
+					"$(PROJECT_DIR)/lawker/Vender/XG-sdk",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.appleInternational.lawker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "add-hoc";
+		};
 		1D2A59261A700822001F9B8E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2317,7 +2498,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "f76272db-1f26-419d-9bf6-600b67461212";
+				PROVISIONING_PROFILE = "012b9b46-d9ad-49ad-a18c-335a566848e3";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2356,7 +2537,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "f76272db-1f26-419d-9bf6-600b67461212";
+				PROVISIONING_PROFILE = "012b9b46-d9ad-49ad-a18c-335a566848e3";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2368,10 +2549,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = lawker/lawker.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Lawtotem EducationConsulting Co.,Ltd. (C9J4XWDVX6)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = TPTRT82JVA;
+				DEVELOPMENT_TEAM = C9J4XWDVX6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2419,11 +2600,11 @@
 					"$(PROJECT_DIR)/lawker/Vender/XG-sdk",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Chris.lawker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appleInternational.lawker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -2433,10 +2614,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = lawker/lawker.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Lawtotem EducationConsulting Co.,Ltd. (C9J4XWDVX6)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = TPTRT82JVA;
+				DEVELOPMENT_TEAM = C9J4XWDVX6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2484,11 +2665,11 @@
 					"$(PROJECT_DIR)/lawker/Vender/XG-sdk",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Chris.lawker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appleInternational.lawker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -2500,6 +2681,7 @@
 			buildConfigurations = (
 				1D2A59261A700822001F9B8E /* Debug */,
 				1D2A59271A700822001F9B8E /* Release */,
+				1C1B40C01E641A6C00B4CBB2 /* add-hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2509,6 +2691,7 @@
 			buildConfigurations = (
 				1D2A59291A700822001F9B8E /* Debug */,
 				1D2A592A1A700822001F9B8E /* Release */,
+				1C1B40C11E641A6C00B4CBB2 /* add-hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

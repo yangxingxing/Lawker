@@ -23,6 +23,10 @@
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKUI/SSUIShareActionSheetStyle.h>
 #import <ShareSDKUI/ShareSDK+SSUI.h>
+#import "ZFDownloadManager.h"
+#import "SXHcModel.h"
+#import "TYDownloadSessionManager.h"
+#import "MBProgressHUD+Add.h"
 
 @interface AdvancedBarrageController()<UIWebViewDelegate,UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate,BarrageRendererDelegate,btnClickedDelegate,btnwidthDelegate>
 {
@@ -31,7 +35,6 @@
     NSString *b;
     NSString *t;
     NSString *v2right;
-    NSString *video;
     NSString *vitle;
     NSString *vizix;
     NSString *vizix2;
@@ -46,6 +49,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tabelview3;
 @property (weak, nonatomic) IBOutlet UIView *textform;
 @property (weak, nonatomic) IBOutlet UILabel *progressLab;
+@property (nonatomic,strong) TYDownloadModel *downloadModel;
 
 @property (weak, nonatomic) IBOutlet UIView *vright;
 
@@ -59,6 +63,7 @@
 @property(nonatomic,strong) NSMutableArray *arrayList2;
 @property(nonatomic,strong) NSMutableArray *arrayList3;
 @property(nonatomic,strong) NSMutableArray *arrayList4;
+@property(nonatomic,strong) SXHcModel *hcModel;
 
 @property (weak, nonatomic) IBOutlet UIButton *b11;
 @property (weak, nonatomic) IBOutlet UIButton *b22;
@@ -104,77 +109,102 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     
+    [self initView];
+    _hcModel = [[SXHcModel alloc] init];
     AppDelegate *app = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    if (_from == FromCash) {
+        NSString *filePath = [NSString stringWithFormat:@"%@/%@",ZFCachesDirectory, ZFFileName(_video)];
+        self.playerView.playerUrl = [NSURL fileURLWithPath:filePath];// 播放本地视频
+        [self.playerView play];
+    } else {
+        //app.docxid = sender.titleLabel.text;
+        //NSLog(@" %@ - %@ ",  app.docxtag , app.docxid);
+        if(self.newsModel.docid){
+            _docp = self.newsModel.docid;
+        }else{
+            _docp = app.docxtag;
+        }
+        
+        if(self.newsModel.skipID){
+            _skip = self.newsModel.skipID;
+        }else{
+            _skip = app.docxid;
+        }
+    }
     app.allowRotation = YES;
-    //app.docxid = sender.titleLabel.text;
-    //NSLog(@" %@ - %@ ",  app.docxtag , app.docxid);
-    if(self.newsModel.docid){
-        _docp = self.newsModel.docid;
-    }else{
-        _docp = app.docxtag;
-    }
+    [self getNewwork];
+}
+
+- (void)initView {
+    _renderer = [[BarrageRenderer alloc]init];
+    _renderer.delegate = self;
+    _renderer.redisplay = YES;
+    _renderer.canvasMargin = UIEdgeInsetsMake(5, ScreenWidth, ScreenWidth, 375);
     
-    if(self.newsModel.skipID){
-        _skip = self.newsModel.skipID;
-    }else{
-        _skip = app.docxid;
-    }
+    _playerView = [[XCAVPlayerView alloc]init];
+    _playerView.owner = self;
+    UIView *playBgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 0.6)];
+    [self.view insertSubview:_renderer.view belowSubview:_vright];
+    [self.view insertSubview:playBgView belowSubview:_renderer.view];
+    self.playerView.frame = playBgView.bounds;
+    self.playerView.retas = @"1";
+    [playBgView addSubview:self.playerView];
+    self.tabelview4.delegate = self;
+    self.tabelview4.dataSource = self;
+    self.tabelview4.separatorStyle = NO;
+}
 
+- (void)getNewwork {
+    
+    
     self.update = YES;
-
+    AppDelegate *app = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     NSString *allUrlstring = [NSString stringWithFormat:@"/full/%@/%@/%ld.html",_skip,_docp,(long)app.uid];
     
     NSLog(@"%@",allUrlstring);
-    
+    // http://lawker.cn/full/%@/%@/%ld.html
     [[[SXNetworkTools sharedNetworkTools]GET:allUrlstring parameters:nil progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
         NSString *key = [responseObject.keyEnumerator nextObject];
         
         NSArray *temArray = responseObject[key];
-        
-        NSString *a = temArray[0][@"title"];
+        NSDictionary *dic = temArray[0];
+        NSString *a = dic[@"title"];
         if(a.length>8){
             b = [NSString stringWithFormat:@"%@...",[a substringToIndex:8]];
         }else{
             b = a;
         }
-        if([temArray[0][@"sc"] isEqualToString:@"ok"]){
+        if([dic[@"sc"] isEqualToString:@"ok"]){
             _sc2.hidden = NO;
             _sc1.hidden = YES;
         }
         
         self.navigationItem.title = b;
         
-        _renderer = [[BarrageRenderer alloc]init];
-        _renderer.delegate = self;
-        _renderer.redisplay = YES;
-        _renderer.canvasMargin = UIEdgeInsetsMake(5, ScreenWidth, ScreenWidth, 375);
+        self.playerView.videoTitle = dic[@"title"];
         
-        _playerView = [[XCAVPlayerView alloc]init];
-        UIView *playBgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 0.6)];
-        [self.view insertSubview:_renderer.view belowSubview:_vright];
-        [self.view insertSubview:playBgView belowSubview:_renderer.view];
-        self.playerView.frame = playBgView.bounds;
-        self.playerView.videoTitle = temArray[0][@"title"];
-        self.playerView.retas = @"1";
-        [playBgView addSubview:self.playerView];
-        self.playerView.playerUrl = [NSURL URLWithString:temArray[0][@"body"]];
-        [self.playerView play];
+        t = dic[@"info"];
         
-        t = temArray[0][@"info"];
+        if (!_video) {
+            _video = dic[@"body"];
+            self.playerView.playerUrl = [NSURL URLWithString:_video];//
+            [self.playerView play];
+        }
         
-        video = temArray[0][@"body"];
-        vitle = [NSString stringWithFormat:@"%@-%@",temArray[0][@"num"],temArray[0][@"title"]];
-        vizix = temArray[0][@"vizix"];
-        vizix2 = temArray[0][@"vizix2"];
-        viurl = temArray[0][@"url"];
-        viimg = temArray[0][@"img"];
-        sf = temArray[0][@"sf"];
-        jiage = temArray[0][@"jiage"];
-        NSDictionary* rObject = temArray[0][@"gg"];
-        
-        self.tabelview4.delegate = self;
-        self.tabelview4.dataSource = self;
-        self.tabelview4.separatorStyle = NO;
+        vitle = [NSString stringWithFormat:@"%@-%@",dic[@"num"],dic[@"title"]];
+        vizix = dic[@"vizix"];
+        vizix2 = dic[@"vizix2"];
+        viurl = dic[@"url"];
+        viimg = dic[@"img"];
+        sf = dic[@"sf"];
+        jiage = dic[@"jiage"];
+        NSDictionary* rObject = dic[@"gg"];
+        _hcModel.title = vitle;
+        _hcModel.docid = _docp;
+        _hcModel.skipID = _skip;
+        _hcModel.cout = _index ? [NSString stringWithFormat:@"1"] : [NSString stringWithFormat:@"%ld",(long)_index];
+        _hcModel.videoId = _video;
+        _hcModel.imgsrc = viimg;
         
         NSMutableArray *arrayM2 = [SXAdvModel objectArrayWithKeyValuesArray:rObject];
         //NSLog(@"%@",arrayM2);
@@ -187,7 +217,7 @@
                 _mjg2.text = [NSString stringWithFormat:@"价格 %@元",jiage];
                 [self.playerView pause];
                 [_renderer stop];
-                [_task cancel];                
+                [_task cancel];
                 _gouz.hidden = NO;
                 if(app.uid > 0){
                     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -204,8 +234,8 @@
                 app.buv = 3;
             }
         }
-      
-        _bodylist = temArray[0][@"bodylist"];
+        
+        _bodylist = dic[@"bodylist"];
         
         [self showInWebView];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -262,11 +292,12 @@
         
         NSLog(@"%@",allUrlstring);
         
+        __weak typeof(self) wSelf = self;
         [[[SXNetworkTools sharedNetworkTools]GET:allUrlstring parameters:nil progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
             NSString *key = [responseObject.keyEnumerator nextObject];
             
             _dmlist = responseObject[key];
-            [self initBarrageRenderer];
+            [wSelf initBarrageRenderer];
             
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
             //NSLog(@"%@",error);
@@ -292,9 +323,8 @@
         NSURLRequest *request =[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://lawker.cn:14321/"]];
         [_webview2 loadRequest:request];
     }
-
-    self.automaticallyAdjustsScrollViewInsets = NO;
     
+    self.automaticallyAdjustsScrollViewInsets = NO;
 }
 
 - (void)showInWebView
@@ -365,48 +395,90 @@
     }
 }
 
+- (void)startDownlaod
+{
+    TYDownloadSessionManager *manager = [TYDownloadSessionManager manager];
+//    __weak typeof(self) weakSelf = self;
+    [manager startWithDownloadModel:_downloadModel progress:^(TYDownloadProgress *progress) {
+        
+    } state:^(TYDownloadState state, NSString *filePath, NSError *error) {
+        if (state == TYDownloadStateCompleted) {
+           
+        }
+        //NSLog(@"state %ld error%@ filePath%@",state,error,filePath);
+    }];
+}
+
 - (IBAction)hc:(id)sender {
-    
-    NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"/Documents/hc/%@.mp4", vitle]];
+    if (!_video) return;
+    [UIView animateWithDuration:2 animations:^{
+        _vright.hidden = YES;
+    }];
+    NSString *filePath = ZFFileFullpath(_video);//[NSString stringWithFormat:@"%@/%@.mp4",ZFCachesDirectory, vitle];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:filePath]) {
-        [self alert:@"缓存完成"];
+        [self alert:@"正在缓存中！"];
     }else{
-    AppDelegate *app = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    if(app.uid){
-        _down.hidden = NO;
-        NSString *path=[NSHomeDirectory() stringByAppendingString:[NSString stringWithFormat:@"/Documents/hc/%@.fruit", vitle]];
-        _task = [LXNetworking downloadWithUrl:video saveToPath:path progress:^(int64_t bytesProgress, int64_t totalBytesProgress) {
-            //封装方法里已经回到主线程，所有这里不用再调主线程了
-            _progressLab.text = [NSString stringWithFormat:@"缓存进度 %.2f",1.0 * bytesProgress/totalBytesProgress];
-            [self.playerView pause];
-        } success:^(id response) {
-            NSFileManager *fm = [NSFileManager defaultManager];
-            NSString *documentsDirectory= [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/hc"];
-            NSString *toPath = [documentsDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"/%@.mp4",vitle]];
-            NSString *filePath = [documentsDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"/%@.fruit",vitle]];
-            [fm createDirectoryAtPath:[toPath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
-            NSError *error;
-            [fm moveItemAtPath:filePath toPath:toPath error:&error];
-            NSString *path=[NSHomeDirectory() stringByAppendingString:[NSString stringWithFormat:@"/Documents/hc/%@.jpg", vitle]];
-            _task = [LXNetworking downloadWithUrl:viimg saveToPath:path progress:^(int64_t bytesProgress, int64_t totalBytesProgress) {
-            } success:^(id response) {
-                [self alert:@"缓存完成"];
-                _down.hidden = YES;
-            } failure:^(NSError *error) {
-            } showHUD:NO];
-            _down.hidden = YES;
-        } failure:^(NSError *error) {
-            
-            //[self alert:@"缓存中断"];
-        } showHUD:NO];
-    }else{
-        [self.playerView pause];
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        UIViewController *jview = [storyboard instantiateViewControllerWithIdentifier:@"FLO"];
-        app.reh = @"1";
-        [self.navigationController pushViewController:jview animated:YES];
-    }
+//        _downloadModel = [[TYDownloadSessionManager manager] downLoadingModelForURLString:_video];
+//        if (_downloadModel) {
+//            [self startDownlaod];
+//            return;
+//        }
+//        _hcModel.videoId = @"http://baobab.wdjcdn.com/1456317490140jiyiyuetai_x264.mp4";
+//        TYDownloadModel *model = [[TYDownloadModel alloc]initWithURLString:_videoId];
+//        _downloadModel = model;
+//        _downloadModel.hcModel = _hcModel;
+//
+//        TYDownloadSessionManager *manager = [TYDownloadSessionManager manager];
+////        __weak typeof(self) weakSelf = self;
+//        [manager startWithDownloadModel:_downloadModel progress:^(TYDownloadProgress *progress) {
+//            NSLog(@"开始下载");
+//        } state:^(TYDownloadState state, NSString *filePath, NSError *error) {
+//            NSLog(@"state %ld error%@ filePath%@",(unsigned long)state,error,filePath);
+//        }];
+        
+        [MBProgressHUD showSuccess:@"开始下载" toView:self.view];
+        [[ZFDownloadManager sharedInstance] download:_video progress:^(CGFloat progress, NSString *speed, NSString *remainingTime, NSString *writtenSize, NSString *totalSize) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+            });
+        } state:^(DownloadState state) {} newsModel:_hcModel isSuspend:NO];
+
+//    AppDelegate *app = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+//    if(app.uid){
+//        _down.hidden = NO;
+//        NSString *path=[NSHomeDirectory() stringByAppendingString:[NSString stringWithFormat:@"/Documents/hc/%@.fruit", vitle]];
+//        _task = [LXNetworking downloadWithUrl:video saveToPath:path progress:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+//            //封装方法里已经回到主线程，所有这里不用再调主线程了
+//            _progressLab.text = [NSString stringWithFormat:@"缓存进度 %.2f",1.0 * bytesProgress/totalBytesProgress];
+//            [self.playerView pause];
+//        } success:^(id response) {
+//            NSFileManager *fm = [NSFileManager defaultManager];
+//            NSString *documentsDirectory= [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/hc"];
+//            NSString *toPath = [documentsDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"/%@.mp4",vitle]];
+//            NSString *filePath = [documentsDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"/%@.fruit",vitle]];
+//            [fm createDirectoryAtPath:[toPath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
+//            NSError *error;
+//            [fm moveItemAtPath:filePath toPath:toPath error:&error];
+//            NSString *path=[NSHomeDirectory() stringByAppendingString:[NSString stringWithFormat:@"/Documents/hc/%@.jpg", vitle]];
+//            _task = [LXNetworking downloadWithUrl:viimg saveToPath:path progress:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+//            } success:^(id response) {
+//                [self alert:@"缓存完成"];
+//                _down.hidden = YES;
+//            } failure:^(NSError *error) {
+//            } showHUD:NO];
+//            _down.hidden = YES;
+//        } failure:^(NSError *error) {
+//            
+//            //[self alert:@"缓存中断"];
+//        } showHUD:NO];
+//    }else{
+//        [self.playerView pause];
+//        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//        UIViewController *jview = [storyboard instantiateViewControllerWithIdentifier:@"FLO"];
+//        app.reh = @"1";
+//        [self.navigationController pushViewController:jview animated:YES];
+//    }
     }
 }
 
@@ -494,7 +566,7 @@
     _sd222.hidden = YES;
     _sd333.hidden = NO;
     [self.playerView pause];
-    self.playerView.retas = @"2";
+    self.playerView.retas = @"1.3";
     [self.playerView play];
 }
 
@@ -511,12 +583,22 @@
     _sd222.hidden = NO;
     _sd333.hidden = YES;
     [self.playerView pause];
-    self.playerView.retas = @"1.5";
+    self.playerView.retas = @"1.7";
     [self.playerView play];
 }
 
 -(void)buttonClick:(NSInteger)txt{
-    self.playerView.playerUrl = [NSURL URLWithString:_bodylist[txt-1][@"info"]];
+    if (_bodylist.count < txt) return;
+    
+    NSDictionary *videoDic = _bodylist[txt-1];
+    _video = videoDic[@"info"];
+    _hcModel.title = videoDic[@"title"];
+    _hcModel.docid = videoDic[@"docid"];
+    _hcModel.skipID = videoDic[@"skipID"];
+    _hcModel.cout = [NSString stringWithFormat:@"%ld",(long)txt];
+    _hcModel.videoId = _video;
+    
+    self.playerView.playerUrl = [NSURL URLWithString:_video];
     [self initBarrageRenderer];
     _goum.hidden = YES;
     [self.playerView play];
@@ -833,6 +915,8 @@
         [_renderer stop];
         [_task cancel];
     }
+    AppDelegate *app = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    app.allowRotation = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -853,36 +937,36 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([tableView isEqual:_tabelview]) {
-        SXAdvModel *newsModel = self.arrayList[indexPath.row];
+        SXAdvModel *advModel = self.arrayList[indexPath.row];
         NSString *ID = @"newslist";
         
         SXAdvCell * cell = [tableView dequeueReusableCellWithIdentifier:ID];
         
-        cell.NewsModel = newsModel;
+        cell.NewsModel = advModel;
         
         cell.btnDelegate =self;
         
         return cell;
     }
     else  if ([tableView isEqual:_tabelview2]) {
-        SXAdvModel *newsModel = self.arrayList2[indexPath.row];
+        SXAdvModel *advModel = self.arrayList2[indexPath.row];
         NSString *ID = @"newslist2";
         
         SXAdvCell * cell = [tableView dequeueReusableCellWithIdentifier:ID];
         
-        cell.NewsModel = newsModel;
+        cell.NewsModel = advModel;
         
         cell.btnDelegate =self;
         
         return cell;
     }
     else  if ([tableView isEqual:_tabelview4]) {
-        SXAdvModel *newsModel = self.arrayList4[indexPath.row];
+        SXAdvModel *advModel = self.arrayList4[indexPath.row];
         NSString *ID = @"newslist4";
         
         SXAdvCell * cell = [tableView dequeueReusableCellWithIdentifier:ID];
         
-        cell.NewsModel = newsModel;
+        cell.NewsModel = advModel;
         
         cell.btnDelegate =self;
         
@@ -890,11 +974,11 @@
     }
     else
     {
-        SXAdvModel *newsModel = self.arrayList3[indexPath.row];
+        SXAdvModel *advModel = self.arrayList3[indexPath.row];
         NSString *ID = @"newslist3";
         SXAdvCell * cell = [tableView dequeueReusableCellWithIdentifier:ID];
         
-        cell.NewsModel = newsModel;
+        cell.NewsModel = advModel;
         
         cell.btnDelegate =self;
         

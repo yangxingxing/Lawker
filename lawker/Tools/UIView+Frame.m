@@ -58,4 +58,13 @@
     return self.frame.size.height;
 }
 
+//细字体
++ (UIFont*)lightFontWithSize:(CGFloat)size
+{
+    UIFont *result = [UIFont fontWithName:@"STHeitiSC-Light" size:size];
+    if (!result)
+        result = [UIFont systemFontOfSize:size];
+    return result;
+}
+
 @end
